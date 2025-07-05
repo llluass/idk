@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Расширенный поиск | Moovly{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 text-white">
+  <h1 class="text-3xl font-bold mb-6">Расширенный поиск фильмов</h1>
+
+  <!-- Форма поиска -->
+  <div class="bg-[#2a2a2a] rounded-lg p-6 mb-4 shadow-lg">
+    <form id="advancedSearchForm" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="query" class="block text-sm font-medium text-gray-300 mb-1">Название фильма</label>
+          <input type="text" id="query" name="query"
+                 class="w-full px-4 py-2 bg-[#333] rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                 placeholder="Введите название">
+        </div>
+
+        <div>
+          <label for="genres" class="block text-sm font-medium text-gray-300 mb-1">Жанры</label>
+          <select id="genres" name="genres" multiple
+                  class="w-full px-4 py-2 bg-[#333] rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none min-h-[80px]">
+            {% for genre in genres %}
+              <option value="{{ genre.id }}">{{ genre.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label for="year_from" class="block text-sm font-medium text-gray-300 mb-1">Год от</label>
+          <input type="number" id="year_from" name="year_from" min="1900" max="{{ current_year }}"
+                 class="w-full px-4 py-2 bg-[#333] rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                 placeholder="1900">
+        </div>
+        <div>
+          <label for="year_to" class="block text-sm font-medium text-gray-300 mb-1">Год до</label>
+          <input type="number" id="year_to" name="year_to" min="1900" max="{{ current_year }}"
+                 class="w-full px-4 py-2 bg-[#333] rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                 placeholder="{{ current_year }}">
+        </div>
+        <div>
+          <label for="rating_min" class="block text-sm font-medium text-gray-300 mb-1">Рейтинг от</label>
+          <input type="number" id="rating_min" name="rating_min" min="0" max="10" step="0.1"
+                 class="w-full px-4 py-2 bg-[#333] rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                 placeholder="0">
+        </div>
+      </div>
+
+      <button type="submit" id="searchButton"
+              class="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold transition">
+        Найти фильмы
+      </button>
+    </form>
+  </div>
+
+  <!-- Контейнер для результатов -->
+  <div id="resultsContainer" class="mt-6 min-h-[400px]">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Результаты поиска</h2>
+      <div id="totalResults" class="text-sm text-gray-400 hidden">Найдено: <span class="text-purple-400">0</span></div>
+    </div>
+
+    <!-- Карточки фильмов -->
+    <div id="advancedResults" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
+
+    <!-- Пагинация -->
+    <div id="pagination" class="flex items-center justify-center mt-8 space-x-2 hidden">
+      <button id="prevPageBtn" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg transition disabled:opacity-50">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <div id="pageNumbers" class="flex space-x-1"></div>
+      <button id="nextPageBtn" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg transition disabled:opacity-50">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+select[multiple] {
+  background-image: none;
+  padding-right: 0.75rem;
+}
+select[multiple] option {
+  padding: 0.25rem 0.5rem;
+}
+#searchButton[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const form = document.getElementById('advancedSearchForm');
+  const searchButton = document.getElementById('searchButton');
+  const resultsContainer = document.getElementById('advancedResults');
+  const totalResults = document.getElementById('totalResults');
+  const pagination = document.getElementById('pagination');
+  const prevBtn = document.getElementById('prevPageBtn');
+  const nextBtn = document.getElementById('nextPageBtn');
+  const pageNumbers = document.getElementById('pageNumbers');
+
+  let currentPage = 1;
+  let totalPages = 1;
+  let searchParams = {};
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    currentPage = 1;
+    updateSearchParams();
+    searchMovies();
+  });
+
+  function updateSearchParams() {
+    const formData = new FormData(form);
+    searchParams = {
+      query: formData.get('query') || '',
+      genres: Array.from(document.getElementById('genres').selectedOptions).map(opt => opt.value).join(','),
+      year_from: formData.get('year_from') || '',
+      year_to: formData.get('year_to') || '',
+      rating_min: formData.get('rating_min') || '',
+      page: currentPage
+    };
+  }
+
+  async function searchMovies() {
+    try {
+      searchButton.disabled = true;
+      searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Поиск...';
+      resultsContainer.innerHTML = '';
+
+      const queryString = new URLSearchParams(searchParams).toString();
+      const response = await fetch(`/api/advanced-search?${queryString}`);
+      if (!response.ok) throw new Error('Ошибка запроса');
+
+      const data = await response.json();
+      const movies = data.results || [];
+
+      if (movies.length === 0) {
+        resultsContainer.innerHTML = '<p class="col-span-full text-center text-gray-400">Ничего не найдено.</p>';
+        pagination.classList.add('hidden');
+        totalResults.classList.add('hidden');
+        return;
+      }
+
+      resultsContainer.innerHTML = '';
+      movies.forEach(movie => {
+        const poster = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/static/default_poster.jpg';
+        const card = document.createElement('div');
+        card.className = 'bg-[#2a2a2a] rounded-lg overflow-hidden shadow hover:shadow-lg transition';
+        card.innerHTML = `
+          <a href="/movie/${movie.id}" class="block">
+            <img src="${poster}" alt="${movie.title}" class="w-full h-64 object-cover">
+            <div class="p-3">
+              <h3 class="font-medium text-purple-300 truncate">${movie.title}</h3>
+              <div class="flex justify-between mt-2 text-sm text-gray-400">
+                <span>${movie.release_date ? movie.release_date.slice(0, 4) : 'N/A'}</span>
+                <span class="text-yellow-400">
+                  <i class="fas fa-star"></i> ${movie.vote_average?.toFixed(1) || '0.0'}
+                </span>
+              </div>
+            </div>
+          </a>
+        `;
+        resultsContainer.appendChild(card);
+      });
+
+      totalPages = data.total_pages;
+      totalResults.querySelector('span').textContent = data.total_results || movies.length;
+      totalResults.classList.remove('hidden');
+      updatePagination();
+
+    } catch (error) {
+      console.error('Ошибка поиска:', error);
+      resultsContainer.innerHTML = '<p class="col-span-full text-center text-red-400">Ошибка при поиске фильмов.</p>';
+    } finally {
+      searchButton.disabled = false;
+      searchButton.textContent = 'Найти фильмы';
+    }
+  }
+
+  function updatePagination() {
+    pageNumbers.innerHTML = '';
+    pagination.classList.remove('hidden');
+    for (let i = 1; i <= Math.min(5, totalPages); i++) {
+      const btn = document.createElement('button');
+      btn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-purple-600' : 'bg-gray-600 hover:bg-gray-500'}`;
+      btn.textContent = i;
+      btn.addEventListener('click', () => {
+        currentPage = i;
+        searchParams.page = currentPage;
+        searchMovies();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      pageNumbers.appendChild(btn);
+    }
+
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+
+    prevBtn.onclick = () => {
+      if (currentPage > 1) {
+        currentPage--;
+        searchParams.page = currentPage;
+        searchMovies();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    nextBtn.onclick = () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        searchParams.page = currentPage;
+        searchMovies();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+  }
+});
+</script>
+{% endblock %}

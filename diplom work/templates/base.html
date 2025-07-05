@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Moovly — каталог фильмов{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Inter:wght@400;600&display=swap"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2 {
+            font-family: 'Red Hat Display', serif;
+        }
+        .search-container {
+            position: relative;
+        }
+        #searchResults {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 30;
+            background-color: #1a1a1a;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+    </style>
+</head>
+<body class="bg-[#1e1e1e] text-white">
+  <div class="flex flex-col min-h-screen">
+    <header class="flex items-center justify-between px-10 py-4 bg-[#242322] relative">
+      <div class="flex items-center gap-8">
+        <button id="menu-toggle" class="text-white focus:outline-none">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="search-container flex-grow flex justify-center relative w-full max-w-4xl">
+        <form id="searchForm" class="flex w-full ">
+        <input type="text" name="query" id="searchInput" placeholder="Поиск фильмов..." class="w-full px-4 py-2 rounded-l-lg bg-gray-700 text-white focus:outline-none" required>
+        <button type="submit" class="bg-purple-600 text-white px-4 rounded-r-lg hover:bg-purple-700 transition">
+          Найти
+        </button>
+      </form>
+
+        <div id="searchResults" class="relative hidden bg-[#1a1a1a] rounded-lg p-4 shadow-lg z-50">
+          <button id="closeSearchResults" 
+                  class="absolute top-2 right-2 text-white text-2xl font-bold hover:text-red-400 focus:outline-none z-50" 
+                  title="Закрыть">&times;</button>
+
+          <div id="searchGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full"></div>
+        </div>
+     </div>
+
+
+        <!-- Контейнер сетки для карточек -->
+      <div class="flex items-center gap-10 text-white font-medium">
+        {% if user_authenticated %}
+          <a href="/profile" class="hover:opacity-80 transition">
+            <img src="{{ user.avatar if user.avatar else '/static/default_avatar.jpg' }}" alt="Аватар" class="w-10 h-10 rounded-full border-2 border-purple-400 object-cover">
+          </a>
+          <a href="/logout" class="hover:text-purple-200">Выйти</a>
+        {% else %}
+          <a href="/login" class="bg-purple-400 text-black px-4 py-2 rounded-lg font-bold">Войти</a>
+          <a href="/register" class="text-purple-300 underline hover:text-yellow-100">Регистрация</a>
+        {% endif %}
+      </div>
+
+      <div id="side-menu" class="hidden absolute top-full left-0 w-64 bg-[#242322] text-white shadow-lg rounded-b-lg z-50 p-4">
+        {% if user_authenticated %}
+          <div class="flex items-center gap-4 mb-4">
+            <img src="{{ user.avatar if user and user.avatar else '/static/default_avatar.jpg' }}" alt="Аватар" class="w-12 h-12 rounded-full border-2 border-purple-400 object-cover">
+          </div>
+        {% endif %}
+        <a href="/profile" class="block py-2 px-4 rounded hover:bg-gray-700">Профиль</a>
+        <a href="/" class="block py-2 px-4 rounded hover:bg-gray-700">Главная</a>
+        <a href="/catalog" class="block py-2 px-4 rounded hover:bg-gray-700">Каталог</a>
+        <a href="/collections" class="block py-2 px-4 rounded hover:bg-gray-700">Коллекции</a>
+        <a href="/threads" class="block py-2 px-4 rounded hover:bg-gray-700">Обсуждения</a>
+        <a href="/advanced-search" class="block py-2 px-4 rounded hover:bg-gray-700">Расширенный поиск</a>
+      </div>
+    </header>
+    <script>
+      const menuToggle = document.getElementById('menu-toggle');
+      const sideMenu = document.getElementById('side-menu');
+
+      menuToggle.addEventListener('click', () => {
+        sideMenu.classList.toggle('hidden');
+      });
+    </script>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="container mx-auto px-4 mt-4">
+          {% for category, message in messages %}
+            <div class="p-3 rounded-lg text-white {% if category == 'error' %}bg-red-500{% elif category == 'success' %}bg-green-500{% elif category == 'warning' %}bg-yellow-500{% else %}bg-blue-500{% endif %} mb-2">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-[#520573] text-center text-sm py-4 text-white">
+        © 2025 Moovly — школьный проект.
+    </footer>
+  </div>
+  
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const searchForm = document.getElementById('searchForm');
+  const searchInput = document.getElementById('searchInput');
+  const resultsContainer = document.getElementById('searchResults');
+  const searchGrid = document.getElementById('searchGrid');
+  const closeBtn = document.getElementById('closeSearchResults');
+  const welcomeBlock = document.getElementById('welcomeBlock');
+
+  if (!searchForm || !searchInput || !resultsContainer || !searchGrid) return;
+
+  searchForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    resultsContainer.classList.remove('hidden');
+    searchGrid.innerHTML = '<p class="col-span-full text-center py-4">Загрузка...</p>';
+
+    if (welcomeBlock) welcomeBlock.classList.add('hidden');
+
+    fetch(`/api/search/movies?query=${encodeURIComponent(query)}`)
+      .then(response => response.ok ? response.json() : Promise.reject('Ошибка сервера'))
+      .then(movies => {
+        searchGrid.innerHTML = '';
+        if (!movies || movies.length === 0) {
+          searchGrid.innerHTML = '<p class="col-span-full text-center text-gray-400 py-4">Ничего не найдено</p>';
+          return;
+        }
+
+        movies.forEach(movie => {
+          if (!movie.id || !movie.title) return;
+          const movieCard = `
+            <a href="/movie/${movie.id}" class="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition">
+              <img src="${movie.poster_path ? 
+                'https://image.tmdb.org/t/p/w500' + movie.poster_path : 
+                '/static/default_poster.jpg'}" 
+                alt="${movie.title}" class="w-full h-64 object-cover" />
+              <div class="p-3">
+                <h3 class="font-bold text-white truncate">${movie.title}</h3>
+                <p class="text-sm text-gray-400">${movie.release_date ? movie.release_date.slice(0, 4) : 'N/A'}</p>
+              </div>
+            </a>
+          `;
+          searchGrid.insertAdjacentHTML('beforeend', movieCard);
+        });
+      })
+      .catch(error => {
+        searchGrid.innerHTML = `
+          <p class="col-span-full text-center text-red-400 py-4">
+            Ошибка при поиске: ${error.message || error}
+          </p>`;
+      });
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      resultsContainer.classList.add('hidden');
+      searchGrid.innerHTML = '';
+      if (searchInput) searchInput.value = '';
+      if (welcomeBlock) welcomeBlock.classList.remove('hidden');
+    });
+  }
+});
+</script>
+
+</body>
+</html>

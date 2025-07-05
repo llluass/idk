@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Moovly — каталог фильмов{% endblock %}
+
+{% block content %}
+        <!-- Картинка -->
+        <section class="relative h-96 bg-cover bg-center" style="background-image: url('/static/cover2.jpg')">
+            <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+            <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
+                <h1 class=" text-5xl font-bold mb-4 "  id="welcomeMessage">Добро пожаловать в Moovly!</h1>
+                <p class="text-lg max-w-2xl"  id="welcomeDescription">
+                    Исследуй мир фильмов, сериалов и аниме. Создавай коллекции, оценивай, обсуждай и получай награды!
+                </p>
+            </div>
+        </section>
+
+        <!-- Популярные фильмы -->
+        <main class="flex-grow px-8 py-10 bg-[#242322]">
+            <section class="mt-10">
+                <h3 class="text-2xl font-extrabold mb-6 text-center text-purple-300">Популярное на этой неделе</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {% for movie in movies %}
+                        <div class="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition duration-300 relative">
+                            <a href="/{{ movie.media_type if movie.media_type else 'movie' }}/{{ movie.id }}">
+                                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="w-full h-64 object-cover" />
+                            </a>
+                            <div class="p-3"> 
+                                <a href="/movie/{{ movie.id }}">
+                                    <h4 class="font-bold text-lg text-[#520573] hover:underline">
+                                        {{ movie.title }}
+                                    </h4>
+                                </a>
+                                <p class="text-sm text-gray-600">{{ movie.release_date[:4] }}</p>
+                            </div>
+                            <div class="absolute inset-0 bg-white bg-opacity-95 opacity-0 group-hover:opacity-100 transition p-4 overflow-hidden">
+                                <h5 class="text-md font-bold mb-1 text-[#520573]">{{ movie.title }} ({{ movie.release_date[:4] }})</h5>
+                                <p class="text-sm text-gray-700">
+                                    {{ movie.overview[:100] }}{% if movie.overview|length > 100 %}... <a href="/movie/{{ movie.id }}" class="text-grey-600 underline">Читать дальше</a>{% endif %}
+                                </p>
+                                <p class="text-sm text-gray-700">
+                                    <strong>Жанры:</strong> {{ movie.genres | join(', ') }}
+                                </p>
+                                <p class="text-sm text-gray-700 mb-1">
+                                    <strong>Актёры:</strong> {{ movie.actors | join(', ') }}
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+          <!-- Топ активных пользователей за неделю -->
+        <section class="mt-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-extrabold text-center text-purple-800 mb-12">
+            Топ активных пользователей
+            </h2>
+            
+            <div class="relative">
+            <!-- Линия рейтинга -->
+            <div class="absolute inset-x-0 top-1/2 h-1 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-transparent"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 relative z-10">
+                {% for user in top_active_users %}
+                <!-- Карточка пользователя -->
+                <div class="relative group {% if loop.index == 1 %}md:col-start-2{% endif %}">
+                <!-- Медаль места -->
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-16 h-16 flex items-center justify-center rounded-full
+                            {% if loop.index == 1 %}bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-500/30
+                            {% elif loop.index == 2 %}bg-gradient-to-br from-gray-300 to-gray-400 shadow-lg shadow-gray-500/30
+                            {% elif loop.index == 3 %}bg-gradient-to-br from-amber-600 to-amber-800 shadow-lg shadow-amber-600/30
+                            {% else %}bg-gray-700 bg-opacity-90 border border-gray-600{% endif %}">
+                    <span class="font-bold text-xl 
+                                {% if loop.index == 1 %}text-gray-900
+                                {% elif loop.index == 2 %}text-gray-800
+                                {% elif loop.index == 3 %}text-amber-100
+                                {% else %}text-gray-300{% endif %}">
+                    {{ loop.index }}
+                    </span>
+                </div>
+                
+                <!-- Основная карточка -->
+                <div class="pt-10 pb-6 px-6 bg-gray-800 rounded-xl shadow-xl border border-gray-700 
+                            transition-all duration-300 group-hover:border-purple-500 group-hover:-translate-y-2
+                            group-hover:shadow-purple-500/20">
+                    <!-- Аватар -->
+                    <div class="w-24 h-24 mx-auto mb-4 relative rounded-full overflow-hidden border-2 
+                                {% if loop.index == 1 %}border-yellow-400
+                                {% elif loop.index == 2 %}border-gray-300
+                                {% elif loop.index == 3 %}border-amber-500
+                                {% else %}border-purple-500{% endif %}
+                                transition-all group-hover:scale-110 group-hover:shadow-lg">
+                    <img src="{{ user.avatar }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    
+                    <!-- Имя пользователя -->
+                    <h3 class="text-xl font-bold text-white text-center mb-1">{{ user.username }}</h3>
+                    
+                    <!-- XP -->
+                    <div class="flex items-center justify-center gap-2">
+                    <div class="text-yellow-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <span class="text-lg font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+                        {{ "{:,}".format(user.total_xp) }} XP
+                    </span>
+                    </div>
+                    
+                   <!-- Уровень и титул -->
+                <div class="flex items-center justify-center mt-1 gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    <span class="text-sm text-purple-400">{{ user.level }} уровень ({{ user.title }})</span>
+                </div>
+                
+                <!-- Подкладка для красоты -->
+                <div class="absolute inset-0 rounded-xl -z-10 
+                            {% if loop.index == 1 %}bg-yellow-500/20 blur-md
+                            {% elif loop.index == 2 %}bg-gray-400/20 blur-md
+                            {% elif loop.index == 3 %}bg-amber-600/20 blur-md
+                            {% else %}bg-purple-500/20 blur-md{% endif %} 
+                            opacity-0 group-hover:opacity-70 transition-opacity"></div>
+            </div>
+            </div>
+            {% endfor %}
+            </div>
+            </div>
+        </div>
+        </section>
+        </main>
+{% endblock %}

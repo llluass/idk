@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль {{ username }} | Moovly{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 text-white">
+  <!-- Шапка профиля -->
+  <div class="flex flex-col md:flex-row gap-8 items-start md:items-end bg-[#222] rounded-2xl p-6 mb-8 relative">
+    <div class="relative z-10">
+      <div class="w-32 h-32 rounded-full border-4 border-purple-500 overflow-hidden bg-gray-700">
+        {% if profile_user.avatar %}
+          <img src="{{ profile_user.avatar }}" alt="Аватар {{ username }}" class="w-full h-full object-cover">
+        {% else %}
+          <div class="w-full h-full flex items-center justify-center text-4xl text-purple-300">
+            {{ username|first|upper }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="relative z-10 flex-1">
+      <h1 class="text-3xl font-bold">{{ username }}</h1>
+      
+      {% if profile_user.bio %}
+        <p class="text-gray-300 max-w-2xl mt-2">{{ profile_user.bio }}</p>
+      {% endif %}
+      
+      <!-- Кнопка "Добавить в друзья" -->
+      {% if current_user and current_user != username %}
+        <div class="mt-4">
+          {% if is_friend %}
+            <button class="px-4 py-2 bg-green-600 text-white rounded-lg cursor-default">
+              <i class="fas fa-check mr-1"></i> Друг
+            </button>
+          {% elif friend_request_sent %}
+            <button class="px-4 py-2 bg-yellow-600 text-white rounded-lg cursor-default">
+              <i class="fas fa-clock mr-1"></i> Запрос отправлен
+            </button>
+          {% else %}
+            <form action="{{ url_for('send_friend_request', target_username=username) }}" method="post">
+              <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                <i class="fas fa-user-plus mr-1"></i> Добавить в друзья
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Коллекции пользователя -->
+  <div class="bg-[#222] rounded-2xl p-6 mb-8">
+    <h2 class="text-xl font-bold mb-4">Коллекции</h2>
+    
+    {% if display_collections %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for collection in display_collections %}
+          <a href="{{ url_for('collection_detail', collection_id=collection.id) }}" 
+             class="block bg-[#2a2a2a] rounded-lg p-4 hover:shadow-lg hover:shadow-purple-500/10 transition-shadow">
+            <h3 class="text-lg font-bold">{{ collection.name }}</h3>
+            <p class="text-gray-400 text-sm mt-1">
+              {{ collection.movies|length }} фильмов | 
+              <i class="fas fa-{{ 'lock' if collection.is_private else 'globe' }}"></i>
+            </p>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-400">Пользователь пока не создал публичных коллекций или у вас нет доступа к его приватным коллекциям.</p>
+    {% endif %}
+  </div>
+
+  <!-- Достижения -->
+  {% if earned_achievements %}
+    <div class="bg-[#222] rounded-2xl p-6 mb-8">
+      <h2 class="text-xl font-bold mb-4">Достижения</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {% for achievement in earned_achievements %}
+          <div class="flex flex-col items-center">
+            <div class="w-16 h-16 rounded-full {{ achievement.color }} flex items-center justify-center text-2xl mb-2">
+              {{ achievement.emoji }}
+            </div>
+            <span class="text-center text-sm">{{ achievement.name }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="bg-[#222] rounded-2xl p-6 mb-8">
+      <h2 class="text-xl font-bold mb-4">Достижения</h2>
+      <p class="text-gray-400">У пользователя пока нет заработанных достижений.</p>
+    </div>
+  {% endif %}
+
+  <!-- Активность -->
+  <div class="bg-[#222] rounded-2xl p-6">
+    <h2 class="text-xl font-bold mb-4">Активность</h2>
+    
+    {% if display_activity %}
+      <div class="space-y-4">
+        {% for activity in display_activity %}
+          <div class="flex gap-3 pb-4 border-b border-[#333] last:border-0 last:pb-0">
+            <div class="w-10 h-10 rounded-full bg-[#333] flex items-center justify-center text-purple-400">
+              <i class="{{ activity.icon }}"></i>
+            </div>
+            <div>
+              <div class="text-sm">
+                <span class="font-bold">{{ username }}</span> {{ activity.text }}
+                {% if activity.movie_id %}
+                  <a href="{{ url_for('movie_detail', tmdb_id=activity.movie_id) }}" class="text-purple-400 hover:underline">
+                    "{{ activity.movie }}"
+                  </a>
+                {% endif %}
+                {% if activity.collection_id %}
+                  <a href="{{ url_for('collection_detail', collection_id=activity.collection_id) }}" class="text-purple-400 hover:underline">
+                    "{{ activity.collection_name }}"
+                  </a>
+                {% endif %}
+              </div>
+              <div class="text-xs text-gray-400 mt-1">{{ activity.time }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-400">Нет активности</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

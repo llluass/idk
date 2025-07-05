@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}{{ thread.title }} | Moovly{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 text-white">
+  <div class="bg-[#2a2a2a] rounded-lg p-6 mb-8">
+    <h1 class="text-3xl font-bold mb-2">{{ thread.title }}</h1>
+    <p class="text-gray-400 text-sm">
+      Автор: <span class="font-medium">{{ thread.created_by }}</span> | 
+      Создано: {{ thread.created_at }}
+    </p>
+    {% if thread.tags %}
+      <div class="mt-2 mb-4">
+        {% for tag in thread.tags %}
+          <span class="inline-block bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded-full mr-2">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <p class="text-gray-300 leading-relaxed">{{ thread.initial_post }}</p>
+  </div>
+
+  <!-- Информация о фильме, если привязан -->
+  {% if movie_data %}
+  <div class="bg-[#2a2a2a] rounded-lg p-6 mb-8 flex flex-col md:flex-row gap-6">
+    <div class="flex-shrink-0">
+      <img src="https://image.tmdb.org/t/p/w300{{ movie_data.poster_path }}" alt="{{ movie_data.title }}" class="rounded-lg shadow-md w-32 md:w-48">
+    </div>
+    <div>
+      <h2 class="text-2xl font-bold mb-2">Фильм: <a href="{{ url_for('movie_detail', tmdb_id=movie_data.id) }}" class="text-purple-400 hover:underline">{{ movie_data.title }}</a></h2>
+      <p class="text-gray-400 text-sm mb-2">{{ movie_data.release_date[:4] }} • {{ movie_data.genres|join(", ") }}</p>
+      <p class="text-gray-300 text-sm">{{ movie_data.overview|truncate(200) }}</p>
+      <p class="text-sm text-gray-300 mt-2"><strong>Рейтинг TMDB:</strong> {{ movie_data.vote_average|round(1) }}/10</p>
+    </div>
+  </div>
+  {% endif %}
+
+
+
+  <!-- Комментарии к треду -->
+  <section class="bg-[#2a2a2a] rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-4">Комментарии к треду</h2>
+
+    {% if session.username %}
+    <div class="bg-[#333] rounded-lg p-4 mb-6">
+      <h3 class="text-xl font-semibold mb-3">Оставить комментарий</h3>
+      <form id="threadCommentForm" class="space-y-4">
+        <input type="hidden" name="thread_id" value="{{ thread.id }}">
+        <textarea name="text" rows="4" required
+                  class="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Напишите ваш комментарий..."></textarea>
+        <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold transition">
+          Отправить комментарий
+        </button>
+      </form>
+    </div>
+    {% else %}
+      <p class="text-gray-400 mb-6">
+        <a href="{{ url_for('login') }}" class="text-purple-400 hover:underline">Войдите</a>, чтобы оставить комментарий к треду.
+      </p>
+    {% endif %}
+
+    <div class="space-y-6">
+      {% for comment in thread.comments %}
+      <div class="bg-[#333] p-4 rounded-lg shadow">
+        <div class="flex justify-between items-center mb-2">
+          <a href="{{ url_for('user_profile', username=comment.user) }}" class="text-purple-400 font-medium">{{ comment.user }}</a>
+          <span class="text-sm text-gray-500">{{ comment.timestamp }}</span>
+        </div>
+        <p class="text-gray-300 leading-snug">{{ comment.text }}</p>
+      </div>
+      {% else %}
+      <p class="text-gray-400">Пока нет комментариев к этому треду. Будьте первым!</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Обработка формы добавления комментария к треду
+    const threadCommentForm = document.getElementById('threadCommentForm');
+    if (threadCommentForm) {
+      threadCommentForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const threadId = this.elements.thread_id.value;
+        const commentText = this.elements.text.value;
+
+        try {
+          const response = await fetch(`/api/thread/${threadId}/comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: commentText })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Ошибка добавления комментария');
+          }
+
+          alert('Комментарий успешно добавлен!');
+          this.reset();
+          window.location.reload(); // Обновляем страницу для отображения нового комментария
+        } catch (error) {
+          console.error('Ошибка:', error);
+          alert('Не удалось добавить комментарий: ' + error.message);
+        }
+      });
+    }
+
+    // Обработка формы добавления рецензии
+    const reviewForm = document.getElementById('reviewForm');
+    if (reviewForm) {
+      reviewForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = {
+          tmdb_id: this.elements.tmdb_id.value,
+          title: this.elements.title.value,
+          rating: this.elements.rating.value,
+          text: this.elements.text.value
+        };
+
+        try {
+          const response = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Ошибка публикации рецензии');
+          }
+
+          alert('Рецензия успешно опубликована!');
+          this.reset();
+          window.location.reload(); // Обновляем страницу для отображения новой рецензии
+        } catch (error) {
+          console.error('Ошибка:', error);
+          alert('Не удалось опубликовать рецензию: ' + error.message);
+        }
+      });
+    }
+
+    // Обработка лайков/дизлайков рецензий
+    document.querySelectorAll('.like-button, .dislike-button').forEach(button => {
+      button.addEventListener('click', async function() {
+        const reviewId = this.dataset.reviewId;
+        const action = this.dataset.action; // 'like' or 'dislike'
+
+        try {
+          const response = await fetch(`/api/review/${reviewId}/like`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: action })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Ошибка при обработке лайка/дизлайка');
+          }
+
+          const data = await response.json();
+          // Обновляем счетчики на странице
+          const parentDiv = this.closest('.bg-[#333]');
+          if (parentDiv) {
+            parentDiv.querySelector('.likes-count').textContent = data.likes_count;
+            parentDiv.querySelector('.dislikes-count').textContent = data.dislikes_count;
+          }
+          // Можно добавить визуальную обратную связь (например, изменение цвета кнопки)
+        } catch (error) {
+          console.error('Ошибка:', error);
+          alert('Не удалось обработать действие: ' + error.message);
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

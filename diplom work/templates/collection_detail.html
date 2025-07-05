@@ -1,0 +1,434 @@
+{% extends "base.html" %}
+
+{% block title %}{{ collection.name }} | Moovly{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 text-white">
+  <!-- Заголовок и информация о коллекции -->
+  <div class="flex justify-between items-start mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">{{ collection.name }}</h1>
+      <p class="text-gray-400">
+        Автор: <a href="{{ url_for('user_profile', username=author) }}" class="text-purple-400 hover:underline">{{ author }}</a>
+      </p>
+    </div>
+    
+    {% if current_user == author %}
+      <form action="{{ url_for('delete_collection', collection_id=collection.id) }}" 
+            method="post" 
+            onsubmit="return confirm('Вы уверены, что хотите удалить эту коллекцию?')">
+        <button type="submit" class="text-red-400 hover:text-red-300">
+          <i class="fas fa-trash-alt"></i> Удалить
+        </button>
+      </form>
+    {% endif %}
+  </div>
+
+  <!-- Описание коллекции -->
+  {% if collection.description %}
+    <div class="bg-[#2a2a2a] rounded-lg p-6 mb-6">
+      <p class="text-gray-300">{{ collection.description }}</p>
+    </div>
+  {% endif %}
+
+  <!-- Лайки и комментарии -->
+  <div class="flex items-center gap-4 mb-4 text-gray-400 text-sm">
+    <div>
+      ❤️ {{ likes_count }} лайков
+    </div>
+    <div>
+      💬 {{ comments_count }} комментариев
+    </div>
+  </div>
+
+  <!-- Кнопка лайка (если не владелец) -->
+  {% if current_user and not is_owner %}
+    <div class="mb-6">
+      <button id="likeButton" 
+              class="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200
+                     {% if is_liked %}
+                       bg-red-500 hover:bg-red-600 text-white
+                     {% else %}
+                       bg-gray-800 hover:bg-gray-700 text-gray-300
+                     {% endif %}
+                     shadow hover:shadow-md"
+              data-collection-id="{{ collection.id }}"
+              data-initial-liked="{{ 'true' if is_liked else 'false' }}">
+        
+        <div id="heartIcon">
+          {% if is_liked %}
+            <i class="fas fa-heart text-white"></i>
+          {% else %}
+            <i class="far fa-heart"></i>
+          {% endif %}
+        </div>
+        <span id="likeText">Нравится</span>
+      </button>
+    </div>
+  {% endif %}
+
+  <!-- Кнопка для открытия модального окна добавления фильмов -->
+  {% if is_owner %}
+    <input type="hidden" id="currentCollectionId" value="{{ collection.id }}">
+    <div class="mb-4">
+      <button onclick="openAddToCollectionModal()" 
+              class="inline-block px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg">
+        <i class="fas fa-plus"></i> Добавить фильмы
+      </button>
+    </div>
+  {% endif %}
+
+  <!-- Модальное окно для добавления фильмов в коллекцию -->
+  <div id="addToCollectionModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-gray-800 rounded-lg shadow-xl w-11/12 max-w-4xl max-h-[90vh] flex flex-col">
+      <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+        <h3 class="text-xl font-semibold text-white">Добавить фильмы в коллекцию</h3>
+        <button onclick="closeAddToCollectionModal()" class="text-gray-400 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <div class="relative mb-4">
+          <input 
+            type="text" 
+            id="collectionMovieSearch" 
+            class="w-full px-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500" 
+            placeholder="Поиск фильмов..."
+            oninput="searchMoviesForCollection()"
+          >
+          <div id="collectionMovieSearchResults" class="absolute z-10 mt-1 w-full bg-gray-800 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden"></div>
+        </div>
+        
+        <div id="selectedMoviesForCollection" class="mb-4 flex flex-wrap gap-2 hidden">
+          <div class="text-sm text-gray-300">Выбранные фильмы:</div>
+        </div>
+        
+        <div id="collectionMovieResults" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 overflow-y-auto">
+          <!-- Фильмы будут загружаться здесь -->
+        </div>
+      </div>
+      <div class="p-4 border-t border-gray-700 flex justify-end gap-2">
+        <button onclick="closeAddToCollectionModal()" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">Отмена</button>
+        <button onclick="confirmAddToCollection()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">Добавить выбранные</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Фильмы в коллекции -->
+  <div class="bg-[#2a2a2a] rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Фильмы в коллекции</h2>
+
+    {% if collection.movies %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {% for movie in collection.movies %}
+          <a href="{{ url_for('movie_detail', tmdb_id=movie.id) }}" 
+             class="group block overflow-hidden rounded-lg">
+            <div class="relative">
+              <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" 
+                   alt="{{ movie.title }}" 
+                   class="w-full h-auto object-cover group-hover:opacity-80 transition">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-3">
+                <h3 class="text-white font-medium">{{ movie.title }}</h3>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-400">В коллекции пока нет фильмов.</p>
+    {% endif %}
+  </div>
+
+  <!-- Комментарии -->
+  <div class="bg-[#2a2a2a] rounded-lg p-6">
+    <h2 class="text-xl font-semibold mb-4">Комментарии</h2>
+    
+    {% if current_user %}
+      <!-- Форма добавления комментария -->
+      <form action="{{ url_for('add_collection_comment') }}" method="post" class="mb-6">
+        <input type="hidden" name="collection_id" value="{{ collection.id }}">
+        <textarea name="text" 
+                  placeholder="Оставьте комментарий..." 
+                  class="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                  rows="3"
+                  required></textarea>
+        <button type="submit" class="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg">
+          Отправить
+        </button>
+      </form>
+    {% else %}
+      <p class="text-gray-400 mb-4">
+        <a href="{{ url_for('login') }}" class="text-purple-400 hover:underline">Войдите</a>, чтобы оставлять комментарии
+      </p>
+    {% endif %}
+    
+    <!-- Список комментариев -->
+    <div class="space-y-4">
+      {% for comment in comments %}
+        <div class="bg-[#333] p-4 rounded-lg">
+          <div class="flex justify-between mb-2">
+            <a href="{{ url_for('user_profile', username=comment.author) }}" 
+               class="text-purple-400 font-medium">{{ comment.author }}</a>
+            <span class="text-gray-400 text-sm">{{ comment.timestamp }}</span>
+          </div>
+          <p class="text-gray-300">{{ comment.text }}</p>
+        </div>
+      {% else %}
+        <p class="text-gray-400">Пока нет комментариев</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Скрипт для обработки лайков и добавления фильмов -->
+<script>
+let selectedMoviesMap = new Map();
+
+function openAddToCollectionModal() {
+  document.getElementById('addToCollectionModal').classList.remove('hidden');
+  loadPopularMovies();
+}
+
+function closeAddToCollectionModal() {
+  document.getElementById('addToCollectionModal').classList.add('hidden');
+  selectedMoviesMap.clear();
+  updateSelectedMoviesDisplay();
+}
+
+function toggleMovieSelection(movieId, movieTitle, posterPath) {
+  if (selectedMoviesMap.has(movieId)) {
+    selectedMoviesMap.delete(movieId);
+  } else {
+    selectedMoviesMap.set(movieId, { title: movieTitle, poster_path: posterPath });
+  }
+  updateSelectedMoviesDisplay();
+}
+
+function updateSelectedMoviesDisplay() {
+  const selectedMoviesContainer = document.getElementById('selectedMoviesForCollection');
+  
+  if (selectedMoviesMap.size > 0) {
+    selectedMoviesContainer.classList.remove('hidden');
+    
+    // Обновляем отображение выбранных фильмов
+    let html = '<div class="text-sm text-gray-300 mb-2">Выбранные фильмы:</div>';
+    selectedMoviesMap.forEach((movie) => {
+      html += `
+        <div class="flex items-center gap-2 bg-gray-700 rounded px-2 py-1">
+          <span>${movie.title}</span>
+          <button onclick="removeSelectedMovie(${movie.id})" class="text-red-400 hover:text-red-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      `;
+    });
+    selectedMoviesContainer.innerHTML = html;
+  } else {
+    selectedMoviesContainer.classList.add('hidden');
+  }
+}
+
+function removeSelectedMovie(movieId) {
+  selectedMoviesMap.delete(movieId);
+  updateSelectedMoviesDisplay();
+}
+
+function loadPopularMovies() {
+  fetch('/api/popular-movies')
+    .then(response => response.json())
+    .then(data => {
+      const container = document.getElementById('collectionMovieResults');
+      container.innerHTML = '';
+      
+      data.forEach(movie => {
+        const movieElement = createMovieCard(movie);
+        container.appendChild(movieElement);
+      });
+    });
+}
+
+function searchMoviesForCollection() {
+  const query = document.getElementById('collectionMovieSearch').value;
+  if (query.length < 2) {
+    document.getElementById('collectionMovieSearchResults').classList.add('hidden');
+    return;
+  }
+  
+  fetch(`/api/search/movies?query=${encodeURIComponent(query)}`)
+    .then(response => response.json())
+    .then(data => {
+      const resultsContainer = document.getElementById('collectionMovieSearchResults');
+      resultsContainer.innerHTML = '';
+      
+      if (data.length > 0) {
+        data.forEach(movie => {
+          const resultItem = document.createElement('div');
+          resultItem.className = 'px-4 py-2 hover:bg-gray-700 cursor-pointer flex items-center gap-2';
+          resultItem.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w92${movie.poster_path}" alt="${movie.title}" class="w-8 h-12 object-cover rounded">
+            <div>
+              <div class="text-white">${movie.title}</div>
+              <div class="text-xs text-gray-400">${movie.release_date ? movie.release_date.split('-')[0] : ''}</div>
+            </div>
+          `;
+          resultItem.onclick = () => {
+            addMovieToResults(movie);
+            document.getElementById('collectionMovieSearchResults').classList.add('hidden');
+            document.getElementById('collectionMovieSearch').value = '';
+          };
+          resultsContainer.appendChild(resultItem);
+        });
+        
+        resultsContainer.classList.remove('hidden');
+      } else {
+        resultsContainer.innerHTML = '<div class="px-4 py-2 text-gray-400">Фильмы не найдены</div>';
+        resultsContainer.classList.remove('hidden');
+      }
+    });
+}
+
+function addMovieToResults(movie) {
+  const resultsContainer = document.getElementById('collectionMovieResults');
+  const existingMovie = document.querySelector(`.movie-card[data-movie-id="${movie.id}"]`);
+  
+  if (!existingMovie) {
+    const movieElement = createMovieCard(movie);
+    resultsContainer.prepend(movieElement);
+  }
+}
+
+function createMovieCard(movie) {
+  const movieElement = document.createElement('div');
+  movieElement.className = 'movie-card relative group';
+  movieElement.dataset.movieId = movie.id;
+  
+  movieElement.innerHTML = `
+    <div class="relative">
+      <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" 
+           class="w-full h-64 object-cover rounded-lg shadow">
+      <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+        <button class="movie-select-btn absolute bottom-2 right-2 text-white bg-purple-600 rounded-full p-1 hover:bg-purple-700 transition"
+                data-movie-id="${movie.id}"
+                onclick="toggleMovieSelection(${movie.id}, '${movie.title.replace(/'/g, "\\'")}', '${movie.poster_path}')">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="mt-2">
+      <h4 class="text-white font-medium truncate" title="${movie.title}">${movie.title}</h4>
+      <div class="text-gray-400 text-sm">${movie.release_date ? movie.release_date.split('-')[0] : ''}</div>
+    </div>
+  `;
+  return movieElement;
+}
+
+async function confirmAddToCollection() {
+  if (selectedMoviesMap.size === 0) {
+    alert('Пожалуйста, выберите хотя бы один фильм');
+    return;
+  }
+
+  const collectionId = document.getElementById('currentCollectionId').value;
+  let allSuccess = true;
+  let addedCount = 0;
+  let failedCount = 0;
+
+  for (let [movieId, movieData] of selectedMoviesMap.entries()) {
+    try {
+      const response = await fetch(`/api/collections/${collectionId}/movies`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: movieId,
+          title: movieData.title,
+          poster_path: movieData.poster_path
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        addedCount++;
+      } else {
+        allSuccess = false;
+        failedCount++;
+        console.error(`Ошибка при добавлении фильма ${movieData.title}: ${data.message || 'Неизвестная ошибка'}`);
+      }
+    } catch (error) {
+      allSuccess = false;
+      failedCount++;
+      console.error(`Произошла ошибка при добавлении фильма ${movieData.title}:`, error);
+    }
+  }
+
+  if (allSuccess) {
+    alert(`Все ${addedCount} фильмов успешно добавлены!`);
+  } else {
+    alert(`Добавлено ${addedCount} фильмов. Не удалось добавить ${failedCount} фильмов.`);
+  }
+
+  closeAddToCollectionModal();
+  location.reload();
+}
+
+// Логика для лайков
+document.addEventListener('DOMContentLoaded', function() {
+  const likeButton = document.getElementById('likeButton');
+  if (likeButton) {
+    likeButton.addEventListener('click', async function() {
+      const collectionId = this.dataset.collectionId;
+      const isLiked = this.dataset.initialLiked === 'true';
+      const button = this;
+      const heartIcon = document.getElementById('heartIcon');
+      const likeText = document.getElementById('likeText');
+      
+      try {
+        const response = await fetch('/api/collection/like', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ collection_id: collectionId })
+        });
+        
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          if (data.action === 'liked') {
+            button.classList.remove('bg-gray-800', 'hover:bg-gray-700', 'text-gray-300');
+            button.classList.add('bg-red-500', 'hover:bg-red-600', 'text-white');
+            heartIcon.innerHTML = '<i class="fas fa-heart text-white"></i>';
+            button.dataset.initialLiked = 'true';
+          } else {
+            button.classList.remove('bg-red-500', 'hover:bg-red-600', 'text-white');
+            button.classList.add('bg-gray-800', 'hover:bg-gray-700', 'text-gray-300');
+            heartIcon.innerHTML = '<i class="far fa-heart"></i>';
+            button.dataset.initialLiked = 'false';
+          }
+          
+          likeText.textContent = data.action === 'liked' ? 'Убрать лайк' : 'Нравится';
+          
+          button.classList.add('transform', 'scale-105');
+          setTimeout(() => {
+            button.classList.remove('transform', 'scale-105');
+          }, 200);
+        } else {
+          alert(data.error || 'Произошла ошибка');
+        }
+      } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Не удалось отправить лайк');
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

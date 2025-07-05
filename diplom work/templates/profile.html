@@ -1,0 +1,1022 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }} — Профиль | Moovly{% endblock %}
+
+{% block content %}
+  <style>
+    /* Общие стили для тела и заголовков */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #1a1a1a; /* Темный фон для всего приложения */
+      color: #e5e7eb; /* Светлый текст по умолчанию */
+    }
+    h1, h2, h3 {
+      font-family: 'Red Hat Display', serif;
+      color: #f9fafb; /* Более светлый цвет для заголовков */
+    }
+
+    /* Прогресс-бар */
+    .progress-container {
+      height: 0.5rem;
+      background-color: #374151; /* Темно-серый фон */
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #8b5cf6; /* Фиолетовый цвет */
+      border-radius: 9999px;
+      transition: width 0.5s ease;
+    }
+
+    /* Общие стили для секций (карточек) */
+    .section-box {
+      background-color: #222; /* Темно-серый фон для блоков */
+      border-radius: 1rem; /* Скругленные углы */
+      padding: 1.5rem; /* Отступы внутри */
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень */
+    }
+    .section-title {
+      font-size: 1.25rem; /* Размер заголовка секции */
+      font-weight: 700; /* Жирный шрифт */
+      margin-bottom: 1rem; /* Отступ снизу */
+      display: flex;
+      align-items: center;
+      gap: 0.5rem; /* Промежуток между иконкой и текстом */
+      color: #d1d5db; /* Цвет заголовка секции */
+    }
+
+    /* Стили для модальных окон */
+    .modal {
+      position: fixed; /* Фиксированное позиционирование */
+      z-index: 1000; /* Поверх всего */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7); /* Полупрозрачный черный фон */
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #2a2a2a; /* Темно-серый фон модального окна */
+      padding: 1.5rem;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      position: relative;
+      color: #e5e7eb; /* Светлый текст */
+    }
+    .close-button {
+      color: #aaa; /* Серый цвет */
+      float: right;
+      font-size: 28px; /* Большой размер */
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close-button:hover,
+    .close-button:focus {
+      color: #fff; /* Белый при наведении */
+    }
+
+    /* Стили для карточек фильмов в закладках */
+    .bookmark-item {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      background-color: #374151; /* Темно-серый фон */
+      gap: 0.75rem;
+    }
+    .bookmark-item img {
+      width: 2.5rem; /* 40px */
+      height: 3.75rem; /* 60px */
+      object-fit: cover;
+      border-radius: 0.25rem;
+    }
+    .bookmark-item span {
+      flex-grow: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #d1d5db;
+    }
+    .bookmark-item button {
+      color: #ef4444; /* Красный цвет */
+      transition: color 0.2s ease;
+    }
+    .bookmark-item button:hover {
+      color: #dc2626; /* Более темный красный */
+    }
+
+    /* Стили для достижений */
+    .achievement-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .achievement-badge:hover {
+      transform: translateY(-3px);
+    }
+    .achievement-icon {
+      width: 3rem; /* 48px */
+      height: 3rem; /* 48px */
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem; /* 24px */
+      margin-bottom: 0.25rem;
+      background-color: #4b5563; /* Серый фон по умолчанию */
+      color: #f9fafb;
+    }
+    .achievement-badge.earned .achievement-icon {
+      /* Динамический цвет фона для заработанных достижений */
+      background-image: linear-gradient(to bottom right, var(--start-color), var(--end-color));
+    }
+    .achievement-badge span {
+      font-size: 0.75rem; /* 12px */
+      color: #d1d5db;
+    }
+    .achievements-list {
+      max-height: calc(70vh - 100px);
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    /* Скроллбар */
+    .achievements-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .achievements-list::-webkit-scrollbar-track {
+      background: #2d2d2d;
+      border-radius: 10px;
+    }
+    .achievements-list::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 10px;
+    }
+
+    /* Tooltip для достижений */
+    #achievementDetailsTooltip {
+      background-color: #1f2937;
+      border: 1px solid #4b5563;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      color: #e5e7eb;
+      z-index: 1001;
+    }
+    #tooltipTitle {
+      color: #a78bfa; /* Фиолетовый */
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    #tooltipDescription {
+      font-size: 0.875rem;
+      color: #d1d5db;
+    }
+    #tooltipCriteria {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 0.5rem;
+    }
+    .hidden {
+      display: none;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      box-sizing: border-box;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+    .modal.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-content {
+      background-color: #1a1a1a;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .close-button {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #ccc;
+    }
+
+    /* Стили для кнопок */
+    .btn-primary {
+      background-color: #8b5cf6; /* Фиолетовый */
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+    }
+    .btn-primary:hover {
+      background-color: #7c3aed; /* Темнее фиолетовый */
+    }
+    .btn-secondary {
+      background-color: #4b5563; /* Серый */
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background-color: #374151; /* Темнее серый */
+    }
+    .connections-section {
+        background-color: #222;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .friend-request {
+        background-color: #333;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .friend-request-actions {
+        display: flex;
+        gap: 8px;
+    }
+    .accept-btn {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .decline-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .friends-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .friend-item {
+        text-align: center;
+    }
+    
+    .friend-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 5px;
+    }
+    
+    .view-all-friends {
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+        color: #9a6aff;
+    }
+    .social-link-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background-color: #374151;
+      border-radius: 0.5rem;
+    }
+    .social-link-item input {
+      flex-grow: 1;
+      background: none;
+      border: none;
+      color: #e5e7eb;
+    }
+    .social-link-item button {
+      color: #ef4444;
+      cursor: pointer;
+    }
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body class="bg-[#1a1a1a] text-white">
+  <div class="flex flex-col min-h-screen">
+    <main class="flex-grow">
+      <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Профиль -->
+        <div class="flex flex-col md:flex-row items-start md:items-end gap-6 bg-gradient-to-r from-purple-900 to-[#222] rounded-2xl p-6 mb-8 shadow-xl">
+          <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-purple-500 bg-gray-800 flex-shrink-0">
+            {% if user.avatar %}
+              <img src="{{ user.avatar }}" alt="Аватар {{ user.username }}" class="w-full h-full object-cover">
+            {% else %}
+              <div class="w-full h-full flex items-center justify-center text-3xl text-purple-300">
+                {{ user.username|first|upper }}
+              </div>
+            {% endif %}
+          </div>
+          <div class="flex-1 space-y-2">
+            <h1 class="text-3xl font-bold text-white flex items-center gap-2">
+              {{ user.username }}
+            </h1>
+            <p class="text-sm text-gray-400">{{ user.bio or 'Пользователь пока не добавил описание.' }}</p>
+            <div class="flex flex-wrap gap-4 text-sm text-gray-400">
+              <span class="flex items-center gap-1">
+                <i class="fas fa-calendar-day"></i>
+                {% if user %}
+                  С {{ user.get('join_date', 'Дата не указана')|datetimeformat('%d.%m.%Y') }}
+                {% else %}
+                  Дата не указана
+                {% endif %}
+              </span>
+              <span class="flex items-center gap-1"><i class="fas fa-map-marker-alt"></i> {{ user.location or 'Не указано' }}</span>
+              <span class="flex items-center gap-1 bg-green-600/20 text-green-400 px-2 py-0.5 rounded-full text-xs"><i class="fas fa-circle text-green-400 text-[0.5rem]"></i> Онлайн</span>
+            </div>
+          </div>
+          <button onclick="openEditProfileModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold transition">Редактировать</button>
+        </div>
+
+        <!-- Модальное окно редактирования профиля -->
+        <div id="editProfileModal" class="modal hidden">
+          <div class="modal-content">
+            <span class="close-button" onclick="closeEditProfileModal()">&times;</span>
+            <h2 class="text-2xl font-bold mb-4 text-white">Редактировать профиль</h2>
+            <form action="{{ url_for('profile') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+              <div>
+                <label for="avatarUpload" class="block text-sm font-medium text-gray-300 mb-1">Аватар</label>
+                <input type="file" id="avatarUpload" name="avatar" accept="image/*"
+                      class="w-full px-3 py-2 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none">
+              </div>
+              <div>
+                <label for="editUsername" class="block text-sm font-medium text-gray-300 mb-1">Имя пользователя</label>
+                <input type="text" id="editUsername" name="username" value="{{  user.username }}" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none">
+              </div>
+              <div>
+                <label for="editBio" class="block text-sm font-medium text-gray-300 mb-1">О себе</label>
+                <textarea id="editBio" name="bio" rows="3" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none">{{ user.bio }}</textarea>
+              </div>
+              <div>
+                <label for="editLocation" class="block text-sm font-medium text-gray-300 mb-1">Местоположение</label>
+                <input type="text" id="editLocation" name="location" value="{{ user.location }}" class="w-full px-3 py-2 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none">
+              </div>
+              <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition">
+                Сохранить изменения
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Статистика и достижения -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="space-y-6 md:col-span-1">
+            <!-- Статистика -->
+                <div class="section-box">
+                <div class="section-title">
+                  <i class="fas fa-chart-line text-purple-400"></i> Статистика
+                </div>
+                <div class="text-sm text-gray-400 mb-2">
+                  Уровень: <span class="text-white font-bold">{{ user.get('level', 1) }}</span>
+                  <span class="text-purple-300 ml-2">({{ user.get('title', 'Новичок') }})</span>
+                </div>
+                <div class="text-sm text-gray-400 mb-2">
+                  XP: <span class="text-white font-bold">{{ user.get('total_xp', 0) }}</span>
+                  {% if user.get('xp_to_next_level', 0) > 0 %}
+                    <span class="ml-2">До следующего уровня: {{  user.get('xp_to_next_level', 100) }} XP</span>
+                  {% else %}
+                    <span class="ml-2 text-green-400">Максимальный уровень!</span>
+                  {% endif %}
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2.5 mb-4">
+                  <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2.5 rounded-full" 
+                      style="width: {{ user.get('level_progress', 0) }}%"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                  <div class="bg-gray-800 p-3 rounded-lg">
+                    <div class="text-lg font-bold text-yellow-400">{{ user.get('badges_total', 0) }}</div>
+                    <div class="text-xs text-gray-400">наград</div>
+                  </div>
+                  <div class="bg-gray-800 p-3 rounded-lg">
+                    <div class="text-lg font-bold text-green-400">{{ user.get('collections', [])|length }}</div>
+                    <div class="text-xs text-gray-400">Коллекций</div>
+                  </div>
+                  <div class="bg-gray-800 p-3 rounded-lg">
+                    <div class="text-lg font-bold text-blue-400">{{ activity_this_month|length }}</div>
+                    <div class="text-xs text-gray-400">Активность (мес.)</div>
+                  </div>
+                </div>
+              </div>
+    
+            
+            <!-- Достижения -->
+            <div class="section-box">
+              <div class="section-title">
+                <i class="fas fa-trophy text-yellow-400"></i> Достижения
+              </div>
+              {% if user.badges %}
+                <div class="flex flex-wrap gap-3 justify-center">
+                  {% for badge in user.badges %}
+                    {% if badge.earned %}
+                      <div class="achievement-badge earned" style="--start-color: {{ badge.color_start }}; --end-color: {{ badge.color_end }};"
+                           title="{{ badge.name }}"
+                           onmouseover="showAchievementDetails(this, '{{ badge.name }}', '{{ badge.description }}', '{{ badge.criteria }}')"
+                           onmouseout="hideAchievementDetails()">
+                        <div class="achievement-icon">
+                          {{ badge.emoji }}
+                        </div>
+                        <span class="text-xs">{{ badge.name|truncate(10) }}</span>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <div class="mt-4 text-center">
+                  <a href="#" onclick="openAchievementsModal(); return false;" class="text-purple-400 text-sm hover:underline">Все достижения ({{ user.badges_total }})</a>
+                </div>
+              {% else %}
+                <p class="text-sm text-gray-400 text-center py-4">Пока нет достижений.</p>
+              {% endif %}
+            </div>
+
+            <!-- Модальное окно всех достижений -->
+            <div id="achievementsModal" class="modal hidden" onclick="handleModalClick(event)">
+              <div class="modal-content" onclick="event.stopPropagation()">
+                <span class="close-button" onclick="closeAchievementsModal()">&times;</span>
+                <h2 class="text-2xl font-bold mb-4 text-white">Все достижения</h2>
+                <div class="achievements-list space-y-4">
+                  {% for badge in user.badges %}
+                  <div class="flex items-center gap-4 p-3 rounded-lg {% if badge.earned %}bg-green-900/30{% else %}bg-gray-800{% endif %}">
+                    <div class="achievement-icon flex-shrink-0" style="background-image: linear-gradient(to bottom right, {{ badge.color_start }}, {{ badge.color_end }});">
+                      {{ badge.emoji }}
+                    </div>
+                    <div>
+                      <h3 class="font-bold text-lg text-white">{{ badge.name }} {% if badge.earned %}<i class="fas fa-check-circle text-green-400 text-sm"></i>{% endif %}</h3>
+                      <p class="text-gray-300 text-sm">{{ badge.description }}</p>
+                      <p class="text-gray-400 text-xs">Критерий: {{ badge.criteria }}</p>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Всплывающее окно деталей достижения -->
+            <div id="achievementDetailsTooltip" class="absolute z-50 bg-gray-800 text-white p-3 rounded-lg shadow-lg hidden" style="max-width: 250px;">
+              <h4 class="font-bold text-purple-300 mb-1" id="tooltipTitle"></h4>
+              <p class="text-sm mb-1" id="tooltipDescription"></p>
+              <p class="text-xs text-gray-400" id="tooltipCriteria"></p>
+            </div>
+            
+            <!-- Социальные связи -->
+            <div class="connections-section">
+                <div class="section-title">
+                    <i class="fas fa-users text-[#9a6aff]"></i>
+                    <h2 class="text-lg font-semibold">Друзья</h2>
+                </div>
+
+                {% if user.friend_requests %}
+                <div class="mb-6">
+                    <h3 class="text-md font-medium mb-2">Запросы в друзья</h3>
+                    {% for requester in user.friend_requests %}
+                    <div class="friend-request">
+                        <a href="{{ url_for('user_profile', username=requester) }}" class="hover:text-[#9a6aff]">
+                            {{ requester }}
+                        </a>
+                        <div class="friend-request-actions">
+                            <form action="{{ url_for('accept_friend_request', requester=requester) }}" method="POST">
+                                <button type="submit" class="accept-btn">Принять</button>
+                            </form>
+                            <form action="{{ url_for('decline_friend_request', requester=requester) }}" method="POST">
+                                <button type="submit" class="decline-btn">Отклонить</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div>
+                    <h3 class="text-md font-medium mb-2">Друзья</h3>
+                    {% if user.friends %}
+                    <div class="friends-list">
+                        {% for friend in user.friends[:3] %}
+                        <div class="friend-item">
+                            <a href="{{ url_for('user_profile', username=friend) }}">
+                                <img src="{{ url_for('static', filename='default_avatar.jpg') }}" 
+                                     alt="Аватар {{ friend }}" 
+                                     class="friend-avatar">
+                                <div>{{ friend[:15] }}{% if friend|length > 15 %}...{% endif %}</div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if user.friends|length > 3 %}
+                    <a href="#" onclick="openAllFriendsModal()" class="view-all-friends">
+                        Все друзья ({{ user.friends|length }})
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <p class="text-gray-400 text-sm">У вас пока нет друзей</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div id="allFriendsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-[#222] rounded-lg p-6 w-full max-w-md max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Все друзья</h2>
+                <button onclick="closeAllFriendsModal()" class="text-2xl">&times;</button>
+            </div>
+            <div class="space-y-3">
+                {% for friend in user.friends %}
+                <div class="flex items-center gap-3 p-2 hover:bg-[#333] rounded">
+                    <img src="{{ url_for('static', filename='default_avatar.jpg') }}" 
+                         alt="Аватар {{ friend }}" 
+                         class="w-10 h-10 rounded-full">
+                    <a href="{{ url_for('user_profile', username=friend) }}" class="flex-1 hover:text-[#9a6aff]">
+                        {{ friend }}
+                    </a>
+                </div>
+                {% else %}
+                <p class="text-gray-400 text-center py-4">У вас пока нет друзей</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+          
+          <!-- Правая колонка -->
+          <div class="md:col-span-2 space-y-6">
+            <!-- Активити -->
+            <div class="section-box">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="section-title">
+                  <i class="fas fa-bolt text-orange-400"></i>
+                  <span>Активити</span>
+                </h2>
+                <select id="activityFilter" class="bg-gray-700 border-none text-sm rounded-lg px-3 py-1 focus:ring-purple-500 focus:border-purple-500 text-white">
+                  <option value="all" {% if activity_filter == 'all' %}selected{% endif %}>Все действия</option>
+                  <option value="comments" {% if activity_filter == 'comments' %}selected{% endif %}>Только комментарии</option>
+                  <option value="collections" {% if activity_filter == 'collections' %}selected{% endif %}>Только коллекции</option>
+                  <option value="bookmark" {% if activity_filter == 'bookmark' %}selected{% endif %}>Только закладки</option>
+                </select>
+              </div>
+              
+            {% if user.activity %}
+              <div class="space-y-4">
+                {% for activity in user.activity %}
+                <div class="flex gap-3 pb-4 border-b border-gray-700 last:border-0 last:pb-0">
+                  <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 text-purple-400">
+                    <i class="{{ activity.icon }}"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-sm text-gray-300">
+                      <span class="font-bold text-white">{{ user.username }}</span> {{ activity.text }}
+                      {% if activity.movie_id %}
+                      <a href="/movie/{{ activity.movie_id }}" class="text-purple-400 hover:underline">{{ activity.movie }}</a>
+                      {% endif %}
+                      {% if activity.collection_id %}
+                      <a href="/collection/{{ activity.collection_id }}" class="text-purple-400 hover:underline">{{ activity.collection_name }}</a>
+                      {% endif %}
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">{{ activity.time }}</div>
+                    {% if activity.comment %}
+                    <div class="mt-2 text-sm bg-gray-800 p-2 rounded-lg text-gray-300">{{ activity.comment }}</div>
+                    {% endif %}
+                  </div>
+                  {% if activity.poster %}
+                  <div class="w-16 h-24 rounded-md overflow-hidden flex-shrink-0 shadow-md">
+                    <img src="https://image.tmdb.org/t/p/w92{{ activity.poster }}" alt="Постер" class="w-full h-full object-cover">
+                  </div>
+                  {% endif %}
+                </div>
+                {% endfor %}
+              </div>
+              <div class="mt-4 text-center">
+                <button class="px-4 py-2 bg-gray-700 rounded-lg text-sm hover:bg-gray-600 transition-colors text-white">
+                  Показать еще
+                </button>
+              </div>
+              {% else %}
+              <p class="text-gray-400 text-center py-4">Пока нет активности</p>
+              {% endif %}
+            </div>
+            
+            <!-- Коллекции -->
+            <div class="section-box">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="section-title">
+                  <i class="fas fa-folder-open text-green-400"></i>
+                  <span>Коллекции</span>
+                </h2>
+                <button id="createCollectionBtn" onclick="openCollectionModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg text-sm font-semibold transition">
+                  <i class="fas fa-plus mr-1"></i> Создать
+                </button>
+              </div>
+
+              {% if user.collections %}
+                <div class="space-y-4">
+                  {% for collection in user.collections %}
+                    <li class="bg-gray-800 p-4 rounded-lg flex justify-between items-center shadow-md">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">{{ collection.name }}</h3>
+                            <p class="text-gray-400 text-sm">{{ collection.description }}</p>
+                            <p class="text-gray-500 text-xs">Приватная: {{ 'Да' if collection.is_private else 'Нет' }}</p>
+                            <a href="{{ url_for('collection_detail', collection_id=collection.id) }}" class="text-purple-400 hover:underline text-sm mt-1 block">Посмотреть коллекцию</a>
+                        </div>
+                        <form action="{{ url_for('delete_collection', collection_id=collection.id) }}" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить эту коллекцию?')">
+                            <button type="submit" class="text-red-500 hover:text-red-700 transition">
+                                <i class="fas fa-trash-alt"></i> Удалить
+                            </button>
+                        </form>
+                    </li>
+                  {% endfor %}
+                </div>
+                <div class="mt-4 text-center">
+                  <a href="/collections" class="text-purple-400 text-sm hover:underline">Все коллекции</a>
+                </div>
+              {% else %}
+                <div class="py-6 text-center bg-gray-800 rounded-lg shadow-inner">
+                  <i class="fas fa-folder-open text-4xl text-gray-500 mb-3"></i>
+                  <h3 class="font-bold text-gray-300">Нет созданных коллекций</h3>
+                  <p class="text-gray-400 text-sm max-w-xs mx-auto mt-1">Собирайте свои любимые фильмы и сериалы в тематические подборки</p>
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Модальное окно для создания коллекции -->
+            <div id="createCollectionModal" class="modal">
+                <div class="modal-content">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-white">Создать коллекцию</h3>
+                        <button onclick="closeModal('createCollectionModal')" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="collectionForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Название</label>
+                            <input type="text" name="name" required 
+                                   class="w-full px-4 py-2 bg-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Описание (необязательно)</label>
+                            <textarea name="description" 
+                                      class="w-full px-4 py-2 bg-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none text-white"></textarea>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="checkbox" name="is_private" id="isPrivate" class="mr-2 h-4 w-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500">
+                            <label for="isPrivate" class="text-sm text-gray-300">Приватная коллекция</label>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-3 pt-4">
+                            <button type="button" onclick="closeModal('createCollectionModal')" 
+                                    class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg transition text-white">
+                                Отмена
+                            </button>
+                            <button type="submit" 
+                                    class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg transition text-white">
+                                Создать
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <script>
+            // Функции для работы с модальным окном создания коллекции
+            function openCollectionModal() {
+                const modal = document.getElementById('createCollectionModal');
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+
+            function closeModal(id) {
+                const modal = document.getElementById(id);
+                modal.classList.add('hidden');
+                modal.style.display = 'none'; // добавьте это
+            }
+
+            // Обработка формы создания коллекции
+            document.getElementById('collectionForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    name: this.name.value,
+                    description: this.description.value,
+                    is_private: this.is_private.checked
+                };
+
+                try {
+                    const response = await fetch('/api/collections', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Ошибка создания коллекции');
+                    }
+
+                    closeModal('createCollectionModal');
+                    this.reset();
+                    window.location.reload(); // Обновляем страницу для отображения новой коллекции
+                    
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    alert('Не удалось создать коллекцию: ' + error.message);
+                }
+            });
+            </script>
+
+
+            <!-- Секция закладок -->
+            <div class="section-box p-4">
+              <h2 class="section-title">
+                <i class="fas fa-bookmark text-purple-400"></i>
+                <span>Мои закладки</span>
+              </h2>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-gray-800 p-4 rounded-lg shadow-inner">
+                  <h3 class="font-semibold text-purple-300 mb-3 flex items-center gap-2">
+                    <i class="fas fa-eye"></i> Смотрю
+                  </h3>
+                  {% if bookmarks.watching %}
+                    <div class="space-y-2">
+                      {% for item in bookmarks.watching %}
+                        <div class="bookmark-item">
+                          <img src="https://image.tmdb.org/t/p/w92{{ item.poster_path }}" alt="{{ item.title }}" class="w-10 h-15 object-cover rounded">
+                          <span>{{ item.title }}</span>
+                          <button class="text-red-400 hover:text-red-300 ml-auto" onclick="removeBookmark('{{ item.id }}', 'watching')">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <p class="text-gray-400 text-sm">Список пуст</p>
+                  {% endif %}
+                </div>
+                
+            <div class="bg-gray-800 p-4 rounded-lg shadow-inner">
+              <h3 class="font-semibold text-green-400 mb-3 flex items-center gap-2">
+                <i class="fas fa-check-circle"></i> Просмотрено
+              </h3>
+              {% if bookmarks.watched %}
+                <div class="space-y-2">
+                  {% for item in bookmarks.watched %}
+                    <div class="bookmark-item">
+                      <img src="https://image.tmdb.org/t/p/w92{{ item.poster_path }}" alt="{{ item.title }}" class="w-10 h-15 object-cover rounded">
+                      <span>{{ item.title }}</span>
+                      <button class="text-red-400 hover:text-red-300 ml-auto" onclick="removeBookmark('{{ item.id }}', 'watched')">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p class="text-gray-400 text-sm">Список пуст</p>
+              {% endif %}
+            </div>
+
+            <div class="bg-gray-800 p-4 rounded-lg shadow-inner">
+              <h3 class="font-semibold text-yellow-400 mb-3 flex items-center gap-2">
+                <i class="fas fa-heart"></i> Любимые
+              </h3>
+              {% if bookmarks.favorites %}
+                <div class="space-y-2">
+                  {% for item in bookmarks.favorites %}
+                    <div class="bookmark-item">
+                      <img src="https://image.tmdb.org/t/p/w92{{ item.poster_path }}" alt="{{ item.title }}" class="w-10 h-15 object-cover rounded">
+                      <span>{{ item.title }}</span>
+                      <button class="text-red-400 hover:text-red-300 ml-auto" onclick="removeBookmark('{{ item.id }}', 'favorites')">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p class="text-gray-400 text-sm">Список пуст</p>
+              {% endif %}
+            </div>
+
+            <div class="bg-gray-800 p-4 rounded-lg shadow-inner">
+              <h3 class="font-semibold text-red-400 mb-3 flex items-center gap-2">
+                <i class="fas fa-times-circle"></i> Брошено
+              </h3>
+              {% if bookmarks.dropped %}
+                <div class="space-y-2">
+                  {% for item in bookmarks.dropped %}
+                    <div class="bookmark-item">
+                      <img src="https://image.tmdb.org/t/p/w92{{ item.poster_path }}" alt="{{ item.title }}" class="w-10 h-15 object-cover rounded">
+                      <span>{{ item.title }}</span>
+                      <button class="text-red-400 hover:text-red-300 ml-auto" onclick="removeBookmark('{{ item.id }}', 'dropped')">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p class="text-gray-400 text-sm">Список пуст</p>
+              {% endif %}
+            </div>
+          </div> 
+
+        <div class="flex justify-center p-4">
+          <div class="bg-gray-800 p-4 rounded-lg shadow-inner w-full sm:w-1/2">
+            <h3 class="font-semibold text-purple-300 mb-3 mt-6 flex items-center gap-2">
+                <i class="fas fa-clock"></i> Буду смотреть
+              </h3>
+              {% if bookmarks.plan %}
+                <div class="space-y-2">
+                  {% for item in bookmarks.plan %}
+                    <div class="bookmark-item">
+                      <img src="https://image.tmdb.org/t/p/w92{{ item.poster_path }}" alt="{{ item.title }}">
+                      <span>{{ item.title }}</span>
+                      <button class="text-red-400 hover:text-red-300 ml-auto" onclick="removeBookmark('{{ item.id }}', 'plan')">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p class="text-gray-400 text-sm">Пока нет фильмов в этой категории.</p>
+              {% endif %}
+          </div>
+        </div>
+      </div>
+            <script>
+            // Функции для работы с модальным окном редактирования профиля
+            function openEditProfileModal() {
+              const modal = document.getElementById('editProfileModal');
+              modal.classList.remove('hidden');
+              modal.classList.add('visible');
+            }
+
+            function closeEditProfileModal() {
+              const modal = document.getElementById('editProfileModal');
+              modal.classList.remove('visible');
+              modal.classList.add('hidden');
+            }
+
+            // Функции для работы с модальным окном всех достижений
+            function openAchievementsModal() {
+              const modal = document.getElementById('achievementsModal');
+              modal.classList.add('visible');
+              document.body.style.overflow = 'hidden'; // Отключаем скролл страницы
+            }
+
+            function closeAchievementsModal() {
+              const modal = document.getElementById('achievementsModal');
+              modal.classList.remove('visible');
+              document.body.style.overflow = ''; // Восстанавливаем скролл страницы
+            }
+
+            // Закрытие модального окна при клике за его пределами
+            function handleModalClick(event) {
+              if (event.target === document.getElementById('achievementsModal')) {
+                closeAchievementsModal();
+              }
+            }
+
+            // Закрытие по нажатию Escape
+            document.addEventListener('keydown', function(event) {
+              if (event.key === 'Escape') {
+                closeAchievementsModal();
+              }
+            });
+
+            // Всплывающее окно деталей достижения
+            let tooltipTimeout;
+
+            function showAchievementDetails(element, title, description, criteria) {
+              clearTimeout(tooltipTimeout);
+              const tooltip = document.getElementById('achievementDetailsTooltip');
+              
+              document.getElementById('tooltipTitle').innerText = title;
+              document.getElementById('tooltipDescription').innerText = description;
+              document.getElementById('tooltipCriteria').innerText = 'Критерий: ' + criteria;
+
+              const rect = element.getBoundingClientRect();
+              tooltip.style.left = Math.min(
+                window.innerWidth - tooltip.offsetWidth - 10,
+                Math.max(10, rect.left + window.scrollX + rect.width / 2 - tooltip.offsetWidth / 2)
+              ) + 'px';
+              tooltip.style.top = (rect.top + window.scrollY - tooltip.offsetHeight - 10) + 'px';
+              tooltip.classList.remove('hidden');
+            }
+
+            function hideAchievementDetails() {
+              tooltipTimeout = setTimeout(() => {
+                document.getElementById('achievementDetailsTooltip').classList.add('hidden');
+              }, 100);
+            }
+
+
+            // Функция удаления закладки
+            function removeBookmark(movieId, category) {
+              if (confirm('Удалить из закладок?')) {
+                fetch('/remove_bookmark', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    movie_id: movieId,
+                    category: category
+                  })
+                })
+                .then(response => response.json())
+                .then(data => {
+                  if (data.success) {
+                    location.reload();
+                  } else {
+                    alert('Ошибка при удалении закладки: ' + data.message);
+                  }
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                  alert('Произошла ошибка при удалении закладки.');
+                });
+              }
+            }
+
+            // Инициализация прогресс-баров при загрузке страницы
+            document.addEventListener('DOMContentLoaded', () => {
+              // Прогресс-бар
+              const progressBar = document.querySelector('.progress-bar'); // Изменено на класс
+              if (progressBar) {
+                const progress = {{ user.level_progress|default(0) }};
+                progressBar.style.width = progress + '%';
+              }
+
+              // Фильтр активности
+              const activityFilterSelect = document.getElementById('activityFilter');
+              if (activityFilterSelect) {
+                activityFilterSelect.addEventListener('change', function() {
+                  const filterValue = this.value;
+                  window.location.href = '{{ url_for("profile") }}?activity_filter=' + filterValue;
+                });
+
+                // Устанавливаем текущее значение фильтра при загрузке страницы
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentFilter = urlParams.get('activity_filter') || 'all';
+                activityFilterSelect.value = currentFilter;
+              }
+            });
+            function openAllFriendsModal() {
+              document.getElementById('allFriendsModal').classList.remove('hidden');
+            }
+            function closeAllFriendsModal() {
+              document.getElementById('allFriendsModal').classList.add('hidden');
+            }
+        </script>
+    </main>
+  </div>
+</body>
+</html>
+{% endblock %}

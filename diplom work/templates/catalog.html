@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Moovly - Каталог{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 text-white">
+  <h1 class="text-3xl font-bold mb-6">Каталог фильмов</h1>
+
+  <!-- Фильтр по жанрам -->
+  <form method="get" class="mb-6">
+    <select name="genre" onchange="this.form.submit()" class="bg-gray-800 text-white p-2 rounded">
+      <option value="">Все жанры</option>
+      {% for genre in genres %}
+        <option value="{{ genre.id }}" {% if selected_genre == genre.id|string %}selected{% endif %}>{{ genre.name }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <!-- Каталог -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+    {% for movie in movies %}
+    <div class="bg-gray-900 rounded-xl shadow p-2 hover:scale-105 transition duration-300">
+      <a href="{{ url_for('movie_detail', tmdb_id=movie.id) }}">
+        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="rounded-md">
+        <h2 class="text-lg font-semibold mt-2">{{ movie.title }}</h2>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Пагинация -->
+  <div class="flex justify-center mt-6 space-x-4">
+    {% if page > 1 %}
+    <a href="{{ url_for('catalog', page=page-1, genre=selected_genre) }}" class="text-blue-400 hover:underline">← Назад</a>
+    {% endif %}
+    <a href="{{ url_for('catalog', page=page+1, genre=selected_genre) }}" class="text-blue-400 hover:underline">Вперёд →</a>
+  </div>
+</div>
+
+{% endblock %}

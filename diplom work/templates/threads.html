@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Обсуждения | Moovly{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 text-white">
+  <h1 class="text-3xl font-bold mb-6">Обсуждения тайтлов</h1>
+
+  <div class="bg-[#2a2a2a] rounded-lg p-6 mb-8">
+    <h2 class="text-xl font-semibold mb-4">Создать новый тред</h2>
+    <form id="createThreadForm" class="space-y-4">
+      <div>
+        <label for="threadTitle" class="block text-sm font-medium text-gray-300 mb-1">Название треда</label>
+        <input type="text" id="threadTitle" name="title" required
+               class="w-full px-4 py-2 bg-[#333] rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+               placeholder="Например: Обсуждение фильма 'Дюна'">
+      </div>
+      <div>
+        <label for="movieSearchInput" class="block text-sm font-medium text-gray-300 mb-1">Привязать к фильму (поиск)</label>
+        <input type="text" id="movieSearchInput" 
+               class="w-full px-4 py-2 bg-[#333] rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+               placeholder="Начните вводить название фильма...">
+        <input type="hidden" id="selectedMovieId" name="tmdb_id">
+        <div id="movieSearchResults" class="absolute z-20 bg-[#1a1a1a] rounded-lg shadow-lg mt-1 w-full max-h-60 overflow-y-auto hidden"></div>
+        <p id="selectedMovieDisplay" class="text-sm text-gray-400 mt-2"></p>
+      </div>
+      <div>
+        <label for="threadTags" class="block text-sm font-medium text-gray-300 mb-1">Теги (через запятую)</label>
+        <input type="text" id="threadTags" name="tags"
+               class="w-full px-4 py-2 bg-[#333] rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+               placeholder="Например: фантастика, боевик, драма">
+      </div>
+      <div>
+        <label for="initialPost" class="block text-sm font-medium text-gray-300 mb-1">Первое сообщение</label>
+        <textarea id="initialPost" name="initial_post" rows="4"
+                  class="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Начните обсуждение..."></textarea>
+      </div>
+      <button type="submit"
+              class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold transition">
+        Создать тред
+      </button>
+    </form>
+  </div>
+
+  <h2 class="text-2xl font-bold mb-4">Все обсуждения</h2>
+
+  {% if threads %}
+  <div class="space-y-6">
+    {% for thread in threads %}
+    <div class="bg-[#2a2a2a] rounded-lg p-6 shadow-lg hover:shadow-purple-500/10 transition-shadow">
+      <a href="{{ url_for('thread_detail', thread_id=thread.id) }}" class="block">
+        <h3 class="text-xl font-bold text-purple-300 hover:underline">{{ thread.title }}</h3>
+      </a>
+      <p class="text-gray-400 text-sm mt-1">
+        Автор: <span class="font-medium">{{ thread.created_by }}</span> | 
+        Создано: {{ thread.created_at }} | 
+        Комментариев: {{ thread.comments|length }}
+      </p>
+      {% if thread.tags %}
+        <div class="mt-2">
+          {% for tag in thread.tags %}
+            <span class="inline-block bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded-full mr-2">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <p class="text-gray-300 mt-3">{{ thread.initial_post|truncate(200) }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-gray-400 text-center py-8">Пока нет обсуждений. Будьте первым, кто создаст тред!</p>
+  {% endif %}
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const createThreadForm = document.getElementById('createThreadForm');
+    const movieSearchInput = document.getElementById('movieSearchInput');
+    const movieSearchResults = document.getElementById('movieSearchResults');
+    const selectedMovieId = document.getElementById('selectedMovieId');
+    const selectedMovieDisplay = document.getElementById('selectedMovieDisplay');
+
+    let searchTimeout;
+
+    // Поиск фильмов для привязки к треду
+    movieSearchInput.addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      const query = this.value.trim();
+      if (query.length < 3) {
+        movieSearchResults.classList.add('hidden');
+        return;
+      }
+
+      searchTimeout = setTimeout(async () => {
+        try {
+          const response = await fetch(`/api/search/movies?query=${encodeURIComponent(query)}`);
+          if (!response.ok) throw new Error('Ошибка поиска фильмов');
+          const movies = await response.json();
+
+          movieSearchResults.innerHTML = '';
+          if (movies.length > 0) {
+            movies.forEach(movie => {
+              const movieItem = document.createElement('div');
+              movieItem.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-700', 'flex', 'items-center', 'gap-2');
+              movieItem.innerHTML = `
+                <img src="${movie.poster_path ? 'https://image.tmdb.org/t/p/w92' + movie.poster_path : '/static/default_poster.jpg'}" 
+                     alt="${movie.title}" class="w-10 h-15 object-cover rounded">
+                <span>${movie.title} (${movie.release_date})</span>
+              `;
+              movieItem.addEventListener('click', () => {
+                selectedMovieId.value = movie.id;
+                selectedMovieDisplay.textContent = `Выбран фильм: ${movie.title} (${movie.release_date})`;
+                movieSearchResults.classList.add('hidden');
+                movieSearchInput.value = movie.title; // Заполняем поле ввода выбранным названием
+              });
+              movieSearchResults.appendChild(movieItem);
+            });
+            movieSearchResults.classList.remove('hidden');
+          } else {
+            movieSearchResults.innerHTML = '<p class="p-2 text-gray-400">Ничего не найдено</p>';
+            movieSearchResults.classList.remove('hidden');
+          }
+        } catch (error) {
+          console.error('Ошибка поиска:', error);
+          movieSearchResults.innerHTML = '<p class="p-2 text-red-400">Ошибка при поиске</p>';
+          movieSearchResults.classList.remove('hidden');
+        }
+      }, 300);
+    });
+
+    // Скрытие результатов поиска при клике вне
+    document.addEventListener('click', function(event) {
+      if (!movieSearchInput.contains(event.target) && !movieSearchResults.contains(event.target)) {
+        movieSearchResults.classList.add('hidden');
+      }
+    });
+
+    // Отправка формы создания треда
+    createThreadForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = {
+        title: document.getElementById('threadTitle').value,
+        tmdb_id: document.getElementById('selectedMovieId').value,
+        tags: document.getElementById('threadTags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+        initial_post: document.getElementById('initialPost').value
+      };
+
+      if (!formData.title || !formData.tmdb_id || !formData.initial_post) {
+        alert('Пожалуйста, заполните все обязательные поля: Название треда, Привязка к фильму и Первое сообщение.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/threads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Ошибка создания треда');
+        }
+
+        alert('Тред успешно создан!');
+        createThreadForm.reset();
+        selectedMovieId.value = '';
+        selectedMovieDisplay.textContent = '';
+        window.location.reload(); // Обновляем страницу для отображения нового треда
+
+      } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Не удалось создать тред: ' + error.message);
+      }
+    });
+  });
+</script>
+{% endblock %}

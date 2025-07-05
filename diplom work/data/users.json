@@ -1,0 +1,999 @@
+{
+    "GenR": {
+        "password": "222",
+        "last_login": "30 June 2025 16:16",
+        "bookmarks": {
+            "Смотрю": [],
+            "Буду смотреть": [],
+            "Брошено": [],
+            "Просмотрено": [],
+            "Любимые": [
+                {
+                    "id": 574475,
+                    "title": "Пункт назначения: Узы крови",
+                    "poster_path": "/A6SyVtXBxU6S5LfDg0tz7lUXhJq.jpg",
+                    "genres": [],
+                    "type": "movie"
+                }
+            ]
+        },
+        "achievements": [
+            {
+                "name": "Новичок",
+                "description": "Зарегистрировался на сайте",
+                "criteria": "Создать аккаунт",
+                "earned": true,
+                "icon": "fa-user-plus",
+                "emoji": "👶",
+                "color": "from-blue-400 to-blue-600",
+                "color_start": "#60a5fa",
+                "color_end": "#2563eb"
+            },
+            {
+                "name": "Киноман",
+                "description": "Посмотреть 50 фильмов",
+                "criteria": "Добавить 50 фильмов в \"Просмотрено\"",
+                "earned": false,
+                "icon": "fa-film",
+                "emoji": "🎬",
+                "color": "from-purple-400 to-purple-600",
+                "color_start": "#a78bfa",
+                "color_end": "#7c3aed"
+            },
+            {
+                "name": "Комментатор",
+                "description": "Оставить 10 комментариев",
+                "criteria": "Оставить 10 комментариев к фильмам",
+                "earned": false,
+                "icon": "fa-comments",
+                "emoji": "💬",
+                "color": "from-green-400 to-green-600",
+                "color_start": "#4ade80",
+                "color_end": "#16a34a"
+            },
+            {
+                "name": "Коллекционер",
+                "description": "Создать 5 коллекций",
+                "criteria": "Создать 5 коллекций фильмов",
+                "earned": false,
+                "icon": "fa-boxes",
+                "emoji": "📦",
+                "color": "from-red-400 to-red-600",
+                "color_start": "#f87171",
+                "color_end": "#dc2626"
+            },
+            {
+                "name": "Популярный коллекционер",
+                "description": "Получить 50 лайков на свои коллекции",
+                "criteria": "Суммарно получить 50 лайков на свои коллекции",
+                "earned": false,
+                "icon": "fa-star",
+                "emoji": "⭐",
+                "color": "from-pink-400 to-pink-600",
+                "color_start": "#f472b6",
+                "color_end": "#db2777"
+            },
+            {
+                "name": "Социальная бабочка",
+                "description": "Добавить 10 друзей",
+                "criteria": "Иметь 10 друзей",
+                "earned": false,
+                "icon": "fa-user-group",
+                "emoji": "🤝",
+                "color": "from-indigo-400 to-indigo-600",
+                "color_start": "#818cf8",
+                "color_end": "#4f46e5"
+            },
+            {
+                "name": "Активный участник",
+                "description": "Оставить 50 комментариев в тредах",
+                "criteria": "Оставить 50 комментариев в тредах обсуждений",
+                "earned": false,
+                "icon": "fa-comment-dots",
+                "emoji": "🗣️",
+                "color": "from-teal-400 to-teal-600",
+                "color_start": "#2dd4bf",
+                "color_end": "#0d9488"
+            },
+            {
+                "name": "Оценщик",
+                "description": "Оценить 20 фильмов по категориям",
+                "criteria": "Оценить 20 уникальных фильмов по категориям (сюжет, актерская игра и т.д.)",
+                "earned": false,
+                "icon": "fa-sliders",
+                "emoji": "📊",
+                "color": "from-orange-400 to-orange-600",
+                "color_start": "#fb923c",
+                "color_end": "#ea580c"
+            }
+        ],
+        "activity": [
+            {
+                "type": "bookmark",
+                "text": "добавил(а) фильм \"Пункт назначения: Узы крови\" в категорию \"Любимые\"",
+                "time": "2025-06-30 16:24:04",
+                "icon": "fas fa-bookmark",
+                "movie": "Пункт назначения: Узы крови",
+                "poster": "/A6SyVtXBxU6S5LfDg0tz7lUXhJq.jpg",
+                "movie_id": 574475
+            }
+        ],
+        "friend_requests_sent": [],
+        "friends": [
+            "lll"
+        ],
+        "total_xp": 25,
+        "level": 1,
+        "xp_to_next_level": 30,
+        "level_progress": 45,
+        "title": "Новичок"
+    },
+    "пцфп": {
+        "password": "874784",
+        "total_xp": 0,
+        "level": 1,
+        "xp_to_next_level": 55,
+        "level_progress": 0,
+        "title": "Новичок",
+        "achievements": [
+            {
+                "name": "Новичок",
+                "description": "Зарегистрировался на сайте",
+                "criteria": "Создать аккаунт",
+                "earned": false,
+                "icon": "fa-user-plus",
+                "emoji": "👶",
+                "color": "from-blue-400 to-blue-600",
+                "color_start": "#60a5fa",
+                "color_end": "#2563eb"
+            },
+            {
+                "name": "Киноман",
+                "description": "Посмотреть 50 фильмов",
+                "criteria": "Добавить 50 фильмов в \"Просмотрено\"",
+                "earned": false,
+                "icon": "fa-film",
+                "emoji": "🎬",
+                "color": "from-purple-400 to-purple-600",
+                "color_start": "#a78bfa",
+                "color_end": "#7c3aed"
+            },
+            {
+                "name": "Комментатор",
+                "description": "Оставить 10 комментариев",
+                "criteria": "Оставить 10 комментариев к фильмам",
+                "earned": false,
+                "icon": "fa-comments",
+                "emoji": "💬",
+                "color": "from-green-400 to-green-600",
+                "color_start": "#4ade80",
+                "color_end": "#16a34a"
+            },
+            {
+                "name": "Коллекционер",
+                "description": "Создать 5 коллекций",
+                "criteria": "Создать 5 коллекций фильмов",
+                "earned": false,
+                "icon": "fa-boxes",
+                "emoji": "📦",
+                "color": "from-red-400 to-red-600",
+                "color_start": "#f87171",
+                "color_end": "#dc2626"
+            },
+            {
+                "name": "Популярный коллекционер",
+                "description": "Получить 50 лайков на свои коллекции",
+                "criteria": "Суммарно получить 50 лайков на свои коллекции",
+                "earned": false,
+                "icon": "fa-star",
+                "emoji": "⭐",
+                "color": "from-pink-400 to-pink-600",
+                "color_start": "#f472b6",
+                "color_end": "#db2777"
+            },
+            {
+                "name": "Социальная бабочка",
+                "description": "Добавить 10 друзей",
+                "criteria": "Иметь 10 друзей",
+                "earned": false,
+                "icon": "fa-user-group",
+                "emoji": "🤝",
+                "color": "from-indigo-400 to-indigo-600",
+                "color_start": "#818cf8",
+                "color_end": "#4f46e5"
+            },
+            {
+                "name": "Активный участник",
+                "description": "Оставить 50 комментариев в тредах",
+                "criteria": "Оставить 50 комментариев в тредах обсуждений",
+                "earned": false,
+                "icon": "fa-comment-dots",
+                "emoji": "🗣️",
+                "color": "from-teal-400 to-teal-600",
+                "color_start": "#2dd4bf",
+                "color_end": "#0d9488"
+            },
+            {
+                "name": "Оценщик",
+                "description": "Оценить 20 фильмов по категориям",
+                "criteria": "Оценить 20 уникальных фильмов по категориям (сюжет, актерская игра и т.д.)",
+                "earned": false,
+                "icon": "fa-sliders",
+                "emoji": "📊",
+                "color": "from-orange-400 to-orange-600",
+                "color_start": "#fb923c",
+                "color_end": "#ea580c"
+            }
+        ]
+    },
+    "gggg": {
+        "password": "88888",
+        "last_login": "30 June 2025 01:10",
+        "bookmarks": {
+            "Смотрю": [],
+            "Буду смотреть": [],
+            "Брошено": [],
+            "Просмотрено": [],
+            "Любимые": []
+        },
+        "collections": [
+            {
+                "id": "45ae7ac7-64b4-4c72-99cc-7d2ea0e72704",
+                "name": "GGG0",
+                "description": "",
+                "is_private": true,
+                "movies": [],
+                "created_at": "2025-06-29 23:25:01"
+            }
+        ],
+        "comments": [
+            {
+                "tmdb_id": 803796,
+                "text": "rfqa",
+                "timestamp": "2025-06-30 00:25:28"
+            }
+        ],
+        "achievements": [
+            {
+                "name": "Новичок",
+                "description": "Зарегистрировался на сайте",
+                "criteria": "Создать аккаунт",
+                "earned": true,
+                "icon": "fa-user-plus",
+                "emoji": "👶",
+                "color": "from-blue-400 to-blue-600",
+                "color_start": "#60a5fa",
+                "color_end": "#2563eb"
+            },
+            {
+                "name": "Киноман",
+                "description": "Посмотреть 50 фильмов",
+                "criteria": "Добавить 50 фильмов в \"Просмотрено\"",
+                "earned": false,
+                "icon": "fa-film",
+                "emoji": "🎬",
+                "color": "from-purple-400 to-purple-600",
+                "color_start": "#a78bfa",
+                "color_end": "#7c3aed"
+            },
+            {
+                "name": "Комментатор",
+                "description": "Оставить 10 комментариев",
+                "criteria": "Оставить 10 комментариев к фильмам",
+                "earned": false,
+                "icon": "fa-comments",
+                "emoji": "💬",
+                "color": "from-green-400 to-green-600",
+                "color_start": "#4ade80",
+                "color_end": "#16a34a"
+            },
+            {
+                "name": "Коллекционер",
+                "description": "Создать 5 коллекций",
+                "criteria": "Создать 5 коллекций фильмов",
+                "earned": false,
+                "icon": "fa-boxes",
+                "emoji": "📦",
+                "color": "from-red-400 to-red-600",
+                "color_start": "#f87171",
+                "color_end": "#dc2626"
+            },
+            {
+                "name": "Популярный коллекционер",
+                "description": "Получить 50 лайков на свои коллекции",
+                "criteria": "Суммарно получить 50 лайков на свои коллекции",
+                "earned": false,
+                "icon": "fa-star",
+                "emoji": "⭐",
+                "color": "from-pink-400 to-pink-600",
+                "color_start": "#f472b6",
+                "color_end": "#db2777"
+            },
+            {
+                "name": "Социальная бабочка",
+                "description": "Добавить 10 друзей",
+                "criteria": "Иметь 10 друзей",
+                "earned": false,
+                "icon": "fa-user-group",
+                "emoji": "🤝",
+                "color": "from-indigo-400 to-indigo-600",
+                "color_start": "#818cf8",
+                "color_end": "#4f46e5"
+            },
+            {
+                "name": "Активный участник",
+                "description": "Оставить 50 комментариев в тредах",
+                "criteria": "Оставить 50 комментариев в тредах обсуждений",
+                "earned": false,
+                "icon": "fa-comment-dots",
+                "emoji": "🗣️",
+                "color": "from-teal-400 to-teal-600",
+                "color_start": "#2dd4bf",
+                "color_end": "#0d9488"
+            },
+            {
+                "name": "Оценщик",
+                "description": "Оценить 20 фильмов по категориям",
+                "criteria": "Оценить 20 уникальных фильмов по категориям (сюжет, актерская игра и т.д.)",
+                "earned": false,
+                "icon": "fa-sliders",
+                "emoji": "📊",
+                "color": "from-orange-400 to-orange-600",
+                "color_start": "#fb923c",
+                "color_end": "#ea580c"
+            }
+        ],
+        "total_xp": 18,
+        "level": 1,
+        "xp_to_next_level": 37,
+        "level_progress": 32,
+        "title": "Новичок"
+    },
+    "hhh": {
+        "password": "7777",
+        "last_login": "05 July 2025 19:27",
+        "collections": [
+            {
+                "id": "06a7e7cc-ba18-4f11-962d-854a4b095dbb",
+                "name": "хорроры",
+                "description": "",
+                "is_private": false,
+                "movies": [],
+                "created_at": "2025-07-02 00:05:37"
+            }
+        ],
+        "comments": [
+            {
+                "tmdb_id": 1311844,
+                "text": "rgjkesrhg",
+                "timestamp": "2025-06-25 22:25:37"
+            },
+            {
+                "tmdb_id": 1311844,
+                "text": "rgjkesrhg",
+                "timestamp": "2025-06-25 22:30:58"
+            },
+            {
+                "tmdb_id": 1311844,
+                "text": "rgjkesrhg",
+                "timestamp": "2025-06-25 22:32:13"
+            }
+        ],
+        "bookmarks": {
+            "Просмотрено": []
+        },
+        "achievements": [
+            {
+                "name": "Новичок",
+                "description": "Зарегистрировался на сайте",
+                "criteria": "Создать аккаунт",
+                "earned": true,
+                "icon": "fa-user-plus",
+                "emoji": "👶",
+                "color": "from-blue-400 to-blue-600",
+                "color_start": "#60a5fa",
+                "color_end": "#2563eb"
+            },
+            {
+                "name": "Киноман",
+                "description": "Посмотреть 50 фильмов",
+                "criteria": "Добавить 50 фильмов в \"Просмотрено\"",
+                "earned": false,
+                "icon": "fa-film",
+                "emoji": "🎬",
+                "color": "from-purple-400 to-purple-600",
+                "color_start": "#a78bfa",
+                "color_end": "#7c3aed"
+            },
+            {
+                "name": "Комментатор",
+                "description": "Оставить 10 комментариев",
+                "criteria": "Оставить 10 комментариев к фильмам",
+                "earned": false,
+                "icon": "fa-comments",
+                "emoji": "💬",
+                "color": "from-green-400 to-green-600",
+                "color_start": "#4ade80",
+                "color_end": "#16a34a"
+            },
+            {
+                "name": "Коллекционер",
+                "description": "Создать 5 коллекций",
+                "criteria": "Создать 5 коллекций фильмов",
+                "earned": false,
+                "icon": "fa-boxes",
+                "emoji": "📦",
+                "color": "from-red-400 to-red-600",
+                "color_start": "#f87171",
+                "color_end": "#dc2626"
+            },
+            {
+                "name": "Популярный коллекционер",
+                "description": "Получить 50 лайков на свои коллекции",
+                "criteria": "Суммарно получить 50 лайков на свои коллекции",
+                "earned": false,
+                "icon": "fa-star",
+                "emoji": "⭐",
+                "color": "from-pink-400 to-pink-600",
+                "color_start": "#f472b6",
+                "color_end": "#db2777"
+            },
+            {
+                "name": "Социальная бабочка",
+                "description": "Добавить 10 друзей",
+                "criteria": "Иметь 10 друзей",
+                "earned": false,
+                "icon": "fa-user-group",
+                "emoji": "🤝",
+                "color": "from-indigo-400 to-indigo-600",
+                "color_start": "#818cf8",
+                "color_end": "#4f46e5"
+            },
+            {
+                "name": "Активный участник",
+                "description": "Оставить 50 комментариев в тредах",
+                "criteria": "Оставить 50 комментариев в тредах обсуждений",
+                "earned": false,
+                "icon": "fa-comment-dots",
+                "emoji": "🗣️",
+                "color": "from-teal-400 to-teal-600",
+                "color_start": "#2dd4bf",
+                "color_end": "#0d9488"
+            },
+            {
+                "name": "Оценщик",
+                "description": "Оценить 20 фильмов по категориям",
+                "criteria": "Оценить 20 уникальных фильмов по категориям (сюжет, актерская игра и т.д.)",
+                "earned": false,
+                "icon": "fa-sliders",
+                "emoji": "📊",
+                "color": "from-orange-400 to-orange-600",
+                "color_start": "#fb923c",
+                "color_end": "#ea580c"
+            }
+        ],
+        "activity": [
+            {
+                "type": "collection",
+                "text": "создал(а) новую коллекцию \"хорроры\"",
+                "time": "2025-07-02 00:05:37",
+                "icon": "fas fa-folder-open",
+                "collection_name": "хорроры",
+                "collection_id": "06a7e7cc-ba18-4f11-962d-854a4b095dbb"
+            }
+        ],
+        "friend_requests_sent": [],
+        "friends": [
+            "lll",
+            "qwerty",
+            "Sau"
+        ],
+        "friend_requests": [],
+        "total_xp": 55,
+        "level": 2,
+        "xp_to_next_level": 120,
+        "level_progress": 0,
+        "title": "Энтузиаст",
+        "username": "hhh",
+        "bio": "бла бла бла",
+        "location": "Не указано",
+        "social_links": [],
+        "liked_collections": [
+            "20a6bce0-27b7-4078-b8f4-f37b1697ccc9"
+        ]
+    },
+    "lll": {
+        "password": "999",
+        "last_login": "04 July 2025 07:18",
+        "collections": [
+            {
+                "id": "20a6bce0-27b7-4078-b8f4-f37b1697ccc9",
+                "name": "First col",
+                "description": "",
+                "is_private": false,
+                "movies": [
+                    {
+                        "id": 951491,
+                        "title": "Пила 10",
+                        "poster_path": "/u2nQ2PwHNHr5jVMIIdQ73XCA00m.jpg",
+                        "order": 1
+                    }
+                ],
+                "created_at": "2025-06-26 09:47:40"
+            },
+            {
+                "id": "6e7352b4-2b04-4a07-aacd-5d8f3378ae16",
+                "name": "РОМАНТИКА",
+                "description": "",
+                "is_private": true,
+                "movies": [],
+                "created_at": "2025-06-30 22:24:57"
+            }
+        ],
+        "friend_requests": [],
+        "achievements": [
+            {
+                "name": "Новичок",
+                "description": "Зарегистрировался на сайте",
+                "criteria": "Создать аккаунт",
+                "earned": true,
+                "icon": "fa-user-plus",
+                "emoji": "👶",
+                "color": "from-blue-400 to-blue-600",
+                "color_start": "#60a5fa",
+                "color_end": "#2563eb"
+            },
+            {
+                "name": "Киноман",
+                "description": "Посмотреть 50 фильмов",
+                "criteria": "Добавить 50 фильмов в \"Просмотрено\"",
+                "earned": false,
+                "icon": "fa-film",
+                "emoji": "🎬",
+                "color": "from-purple-400 to-purple-600",
+                "color_start": "#a78bfa",
+                "color_end": "#7c3aed"
+            },
+            {
+                "name": "Комментатор",
+                "description": "Оставить 10 комментариев",
+                "criteria": "Оставить 10 комментариев к фильмам",
+                "earned": false,
+                "icon": "fa-comments",
+                "emoji": "💬",
+                "color": "from-green-400 to-green-600",
+                "color_start": "#4ade80",
+                "color_end": "#16a34a"
+            },
+            {
+                "name": "Коллекционер",
+                "description": "Создать 5 коллекций",
+                "criteria": "Создать 5 коллекций фильмов",
+                "earned": false,
+                "icon": "fa-boxes",
+                "emoji": "📦",
+                "color": "from-red-400 to-red-600",
+                "color_start": "#f87171",
+                "color_end": "#dc2626"
+            },
+            {
+                "name": "Популярный коллекционер",
+                "description": "Получить 50 лайков на свои коллекции",
+                "criteria": "Суммарно получить 50 лайков на свои коллекции",
+                "earned": false,
+                "icon": "fa-star",
+                "emoji": "⭐",
+                "color": "from-pink-400 to-pink-600",
+                "color_start": "#f472b6",
+                "color_end": "#db2777"
+            },
+            {
+                "name": "Социальная бабочка",
+                "description": "Добавить 10 друзей",
+                "criteria": "Иметь 10 друзей",
+                "earned": false,
+                "icon": "fa-user-group",
+                "emoji": "🤝",
+                "color": "from-indigo-400 to-indigo-600",
+                "color_start": "#818cf8",
+                "color_end": "#4f46e5"
+            },
+            {
+                "name": "Активный участник",
+                "description": "Оставить 50 комментариев в тредах",
+                "criteria": "Оставить 50 комментариев в тредах обсуждений",
+                "earned": false,
+                "icon": "fa-comment-dots",
+                "emoji": "🗣️",
+                "color": "from-teal-400 to-teal-600",
+                "color_start": "#2dd4bf",
+                "color_end": "#0d9488"
+            },
+            {
+                "name": "Оценщик",
+                "description": "Оценить 20 фильмов по категориям",
+                "criteria": "Оценить 20 уникальных фильмов по категориям (сюжет, актерская игра и т.д.)",
+                "earned": false,
+                "icon": "fa-sliders",
+                "emoji": "📊",
+                "color": "from-orange-400 to-orange-600",
+                "color_start": "#fb923c",
+                "color_end": "#ea580c"
+            }
+        ],
+        "bookmarks": {
+            "Смотрю": [],
+            "Буду смотреть": [
+                {
+                    "id": 574475,
+                    "title": "Пункт назначения: Узы крови",
+                    "poster_path": "/A6SyVtXBxU6S5LfDg0tz7lUXhJq.jpg",
+                    "genres": [],
+                    "type": "movie"
+                }
+            ],
+            "Брошено": [],
+            "Просмотрено": [],
+            "Любимые": []
+        },
+        "activity": [
+            {
+                "type": "collection",
+                "text": "создал(а) новую коллекцию \"РОМАНТИКА\"",
+                "time": "2025-06-30 22:24:57",
+                "icon": "fas fa-folder-open",
+                "collection_name": "РОМАНТИКА",
+                "collection_id": "6e7352b4-2b04-4a07-aacd-5d8f3378ae16"
+            },
+            {
+                "type": "collection",
+                "text": "создал(а) новую коллекцию \"Ужасы\"",
+                "time": "2025-06-30 22:24:44",
+                "icon": "fas fa-folder-open",
+                "collection_name": "Ужасы",
+                "collection_id": "f3b1b086-a812-4490-b56d-6ae1adb04369"
+            },
+            {
+                "type": "bookmark",
+                "text": "добавил(а) фильм \"Пункт назначения: Узы крови\" в категорию \"Буду смотреть\"",
+                "time": "2025-06-30 22:23:57",
+                "icon": "fas fa-bookmark",
+                "movie": "Пункт назначения: Узы крови",
+                "poster": "/A6SyVtXBxU6S5LfDg0tz7lUXhJq.jpg",
+                "movie_id": 574475
+            }
+        ],
+        "friends": [
+            "GenR",
+            "hhh"
+        ],
+        "total_xp": 52,
+        "level": 1,
+        "xp_to_next_level": 3,
+        "level_progress": 94,
+        "title": "Новичок",
+        "username": "lll"
+    },
+    "Sau": {
+        "password": "sau",
+        "join_date": "2025-06-30 22:26:01",
+        "last_login": "05 July 2025 19:15",
+        "avatar": "/static/default_avatar.jpg",
+        "bio": "",
+        "location": "",
+        "is_verified": false,
+        "is_premium": false,
+        "social_links": [],
+        "bookmarks": {
+            "Смотрю": [],
+            "Буду смотреть": [],
+            "Брошено": [],
+            "Просмотрено": [],
+            "Любимые": []
+        },
+        "collections": [],
+        "comments": [],
+        "collection_comments": [],
+        "activity": [],
+        "achievements": [
+            {
+                "name": "Новичок",
+                "description": "Зарегистрировался на сайте",
+                "criteria": "Создать аккаунт",
+                "earned": true,
+                "icon": "fa-user-plus",
+                "emoji": "👶",
+                "color": "from-blue-400 to-blue-600",
+                "color_start": "#60a5fa",
+                "color_end": "#2563eb"
+            },
+            {
+                "name": "Киноман",
+                "description": "Посмотреть 50 фильмов",
+                "criteria": "Добавить 50 фильмов в \"Просмотрено\"",
+                "earned": false,
+                "icon": "fa-film",
+                "emoji": "🎬",
+                "color": "from-purple-400 to-purple-600",
+                "color_start": "#a78bfa",
+                "color_end": "#7c3aed"
+            },
+            {
+                "name": "Комментатор",
+                "description": "Оставить 10 комментариев",
+                "criteria": "Оставить 10 комментариев к фильмам",
+                "earned": false,
+                "icon": "fa-comments",
+                "emoji": "💬",
+                "color": "from-green-400 to-green-600",
+                "color_start": "#4ade80",
+                "color_end": "#16a34a"
+            },
+            {
+                "name": "Коллекционер",
+                "description": "Создать 5 коллекций",
+                "criteria": "Создать 5 коллекций фильмов",
+                "earned": false,
+                "icon": "fa-boxes",
+                "emoji": "📦",
+                "color": "from-red-400 to-red-600",
+                "color_start": "#f87171",
+                "color_end": "#dc2626"
+            },
+            {
+                "name": "Популярный коллекционер",
+                "description": "Получить 50 лайков на свои коллекции",
+                "criteria": "Суммарно получить 50 лайков на свои коллекции",
+                "earned": false,
+                "icon": "fa-star",
+                "emoji": "⭐",
+                "color": "from-pink-400 to-pink-600",
+                "color_start": "#f472b6",
+                "color_end": "#db2777"
+            },
+            {
+                "name": "Социальная бабочка",
+                "description": "Добавить 10 друзей",
+                "criteria": "Иметь 10 друзей",
+                "earned": false,
+                "icon": "fa-user-group",
+                "emoji": "🤝",
+                "color": "from-indigo-400 to-indigo-600",
+                "color_start": "#818cf8",
+                "color_end": "#4f46e5"
+            },
+            {
+                "name": "Активный участник",
+                "description": "Оставить 50 комментариев в тредах",
+                "criteria": "Оставить 50 комментариев в тредах обсуждений",
+                "earned": false,
+                "icon": "fa-comment-dots",
+                "emoji": "🗣️",
+                "color": "from-teal-400 to-teal-600",
+                "color_start": "#2dd4bf",
+                "color_end": "#0d9488"
+            },
+            {
+                "name": "Оценщик",
+                "description": "Оценить 20 фильмов по категориям",
+                "criteria": "Оценить 20 уникальных фильмов по категориям (сюжет, актерская игра и т.д.)",
+                "earned": false,
+                "icon": "fa-sliders",
+                "emoji": "📊",
+                "color": "from-orange-400 to-orange-600",
+                "color_start": "#fb923c",
+                "color_end": "#ea580c"
+            }
+        ],
+        "liked_collections": [
+            "06a7e7cc-ba18-4f11-962d-854a4b095dbb"
+        ],
+        "friends": [
+            "hhh"
+        ],
+        "friend_requests": [],
+        "friend_requests_sent": [],
+        "total_xp": 60,
+        "level": 2,
+        "xp_to_next_level": 115,
+        "level_progress": 4,
+        "title": "Энтузиаст",
+        "username": "Sau"
+    },
+    "qqqwerty": {
+        "password": "666",
+        "join_date": "2025-07-01 23:22:11",
+        "last_login": "05 July 2025 09:17",
+        "avatar": "/static/avatars/qwerty_avatar.jpg",
+        "bio": "уцлаофшовмтр",
+        "location": "тута",
+        "is_verified": false,
+        "is_premium": false,
+        "social_links": [],
+        "bookmarks": {
+            "Смотрю": [],
+            "Буду смотреть": [],
+            "Брошено": [],
+            "Просмотрено": [],
+            "Любимые": []
+        },
+        "collections": [
+            {
+                "id": "060d8823-80bb-4b22-86e2-59fe2ca6c61c",
+                "name": "My Col",
+                "description": "",
+                "is_private": false,
+                "movies": [
+                    {
+                        "id": 246355,
+                        "title": "Пила",
+                        "poster_path": "/uvjBl6LHmb5JpAbmSZzeWA1c7Sv.jpg",
+                        "order": 1
+                    }
+                ],
+                "created_at": "2025-07-04 06:56:25"
+            }
+        ],
+        "comments": [],
+        "collection_comments": [
+            {
+                "collection_id": "060d8823-80bb-4b22-86e2-59fe2ca6c61c",
+                "text": "ФУУУУ",
+                "timestamp": "2025-07-05 16:03:38"
+            }
+        ],
+        "activity": [
+            {
+                "type": "collection_comment",
+                "text": "оставил(а) комментарий к коллекции \"My Col\"",
+                "time": "2025-07-05 16:03:38",
+                "icon": "fas fa-comment",
+                "collection_id": "060d8823-80bb-4b22-86e2-59fe2ca6c61c",
+                "collection_name": "My Col"
+            },
+            {
+                "type": "collection",
+                "text": "создал(а) новую коллекцию \"My Col\"",
+                "time": "2025-07-04 06:56:25",
+                "icon": "fas fa-folder-open",
+                "collection_name": "My Col",
+                "collection_id": "060d8823-80bb-4b22-86e2-59fe2ca6c61c"
+            },
+            {
+                "type": "bookmark",
+                "text": "добавил(а) фильм \"Громовержцы*\" в категорию \"Брошено\"",
+                "time": "2025-07-04 03:46:27",
+                "icon": "fas fa-bookmark",
+                "movie": "Громовержцы*",
+                "poster": "https://image.tmdb.org/t/p/w500/l4UtldCA7OgORWY9UcyWBqaHWHF.jpg",
+                "movie_id": 986056
+            },
+            {
+                "type": "thread_created",
+                "text": "создал(а) новый тред \"«Оппенгеймер» — искусство через разрушение или пафос ради зрелищности?\"",
+                "time": "2025-07-03 22:27:03",
+                "icon": "fas fa-comments",
+                "thread_id": "1dc4e77f-b566-4644-99ed-4e374a582a73",
+                "thread_title": "«Оппенгеймер» — искусство через разрушение или пафос ради зрелищности?"
+            }
+        ],
+        "achievements": [
+            {
+                "name": "Новичок",
+                "description": "Зарегистрировался на сайте",
+                "criteria": "Создать аккаунт",
+                "earned": true,
+                "icon": "fa-user-plus",
+                "emoji": "👶",
+                "color": "from-blue-400 to-blue-600",
+                "color_start": "#60a5fa",
+                "color_end": "#2563eb"
+            },
+            {
+                "name": "Киноман",
+                "description": "Посмотреть 50 фильмов",
+                "criteria": "Добавить 50 фильмов в \"Просмотрено\"",
+                "earned": false,
+                "icon": "fa-film",
+                "emoji": "🎬",
+                "color": "from-purple-400 to-purple-600",
+                "color_start": "#a78bfa",
+                "color_end": "#7c3aed"
+            },
+            {
+                "name": "Комментатор",
+                "description": "Оставить 10 комментариев",
+                "criteria": "Оставить 10 комментариев к фильмам",
+                "earned": false,
+                "icon": "fa-comments",
+                "emoji": "💬",
+                "color": "from-green-400 to-green-600",
+                "color_start": "#4ade80",
+                "color_end": "#16a34a"
+            },
+            {
+                "name": "Коллекционер",
+                "description": "Создать 5 коллекций",
+                "criteria": "Создать 5 коллекций фильмов",
+                "earned": false,
+                "icon": "fa-boxes",
+                "emoji": "📦",
+                "color": "from-red-400 to-red-600",
+                "color_start": "#f87171",
+                "color_end": "#dc2626"
+            },
+            {
+                "name": "Популярный коллекционер",
+                "description": "Получить 50 лайков на свои коллекции",
+                "criteria": "Суммарно получить 50 лайков на свои коллекции",
+                "earned": false,
+                "icon": "fa-star",
+                "emoji": "⭐",
+                "color": "from-pink-400 to-pink-600",
+                "color_start": "#f472b6",
+                "color_end": "#db2777"
+            },
+            {
+                "name": "Социальная бабочка",
+                "description": "Добавить 10 друзей",
+                "criteria": "Иметь 10 друзей",
+                "earned": false,
+                "icon": "fa-user-group",
+                "emoji": "🤝",
+                "color": "from-indigo-400 to-indigo-600",
+                "color_start": "#818cf8",
+                "color_end": "#4f46e5"
+            },
+            {
+                "name": "Активный участник",
+                "description": "Оставить 50 комментариев в тредах",
+                "criteria": "Оставить 50 комментариев в тредах обсуждений",
+                "earned": false,
+                "icon": "fa-comment-dots",
+                "emoji": "🗣️",
+                "color": "from-teal-400 to-teal-600",
+                "color_start": "#2dd4bf",
+                "color_end": "#0d9488"
+            },
+            {
+                "name": "Оценщик",
+                "description": "Оценить 20 фильмов по категориям",
+                "criteria": "Оценить 20 уникальных фильмов по категориям (сюжет, актерская игра и т.д.)",
+                "earned": false,
+                "icon": "fa-sliders",
+                "emoji": "📊",
+                "color": "from-orange-400 to-orange-600",
+                "color_start": "#fb923c",
+                "color_end": "#ea580c"
+            }
+        ],
+        "liked_collections": [],
+        "friends": [
+            "hhh"
+        ],
+        "friend_requests": [],
+        "friend_requests_sent": [],
+        "movie_ratings": {
+            "541671": {
+                "plot": 0,
+                "acting": 0,
+                "visuals": 0,
+                "music": 0,
+                "direction": 0
+            },
+            "1151031": {
+                "plot": 5,
+                "acting": 5,
+                "visuals": 5,
+                "music": 5,
+                "direction": 5
+            }
+        },
+        "username": "qwerty",
+        "total_xp": 86,
+        "level": 2,
+        "xp_to_next_level": 89,
+        "level_progress": 25,
+        "title": "Энтузиаст"
+    }
+}
